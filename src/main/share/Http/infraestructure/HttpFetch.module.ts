@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { HttpFetchService } from "./httpFetch.service";
+import { CustomHttpService } from "./CustomHttp.service";
 
 @Module({
-  providers:[HttpFetchService],
-  exports:[HttpFetchService]
+  providers:[CustomHttpService],
+  exports:[CustomHttpService]
 })
 export class HttpFetchModule {}

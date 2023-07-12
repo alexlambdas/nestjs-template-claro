@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Injectable, UseInterceptors } from "@nestjs/common";
 import { Request, Response } from "express";
-import { FaultDto } from "../../domain/dtos/Fault.dto";
-import { fnReduceMessageType } from "../../domain/types/CustomTypes.types";
+import { FaultDto } from "../domain/dtos/Fault.dto";
+import { fnReduceMessageType } from "../domain/types/CustomTypes.types";
 
 
 /**
