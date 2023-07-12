@@ -10,7 +10,7 @@ export class CustomHttpService implements CustomHttpRepository{
 
   constructor(){}
   
-  async customFetch(httpProperties: HttpPropertiesType): Promise<any>{
+  async customFetch<OutputType>(httpProperties: HttpPropertiesType): Promise<OutputType>{
     const {url, properties } = httpProperties;
     try{
       return (await fetch(url,properties)).json();
@@ -26,12 +26,12 @@ export class CustomHttpService implements CustomHttpRepository{
   }
 
 
-  customFetchAndTimeout(httpProperties: HttpPropertiesType){
+  customFetchAndTimeout<OutputType>(httpProperties: HttpPropertiesType){
     
     const { timeout } = httpProperties;
     const fnCustomSetTimeOut = this.customSetTimeOut;
 
-    return async function(fnCustomFetch: (httpProperties: HttpPropertiesType) => any){
+    return async function(fnCustomFetch: (httpProperties: HttpPropertiesType) => Promise<OutputType>){
       return await Promise.race([
         fnCustomFetch(httpProperties),
         fnCustomSetTimeOut(timeout),
@@ -40,11 +40,11 @@ export class CustomHttpService implements CustomHttpRepository{
   }
 
 
-  fetchData(httpProperties: HttpPropertiesType){
+  fetchData<OutputType>(httpProperties: HttpPropertiesType){
 
     const fnCustomFetchAndTimeout = this.customFetchAndTimeout(httpProperties);
 
-    return async function(fnCustomFetch: (httpProperties: HttpPropertiesType) => any){
+    return async function(fnCustomFetch: (httpProperties: HttpPropertiesType) => Promise<OutputType>){
       try{ 
         return await (fnCustomFetchAndTimeout)(fnCustomFetch); 
       }
@@ -54,19 +54,19 @@ export class CustomHttpService implements CustomHttpRepository{
     }
   }
 
-  async get<OutputType>(httpPropertiesType: HttpPropertiesType): Promise<OutputType>{
-
+  async get<OutputType>(httpProperties: HttpPropertiesType): Promise<OutputType>{
+    return await this.fetchData(httpProperties)(this.customFetch);
   }
 
-  async post<OutputType>(httpPropertiesType: HttpPropertiesType): Promise<OutputType>{
-
+  async post<OutputType>(httpProperties: HttpPropertiesType): Promise<OutputType>{
+    return await this.fetchData(httpProperties)(this.customFetch);
   };
 
-  async put<OutputType>(httpPropertiesType: HttpPropertiesType): Promise<OutputType>{
-
+  async put<OutputType>(httpProperties: HttpPropertiesType): Promise<OutputType>{
+    return await this.fetchData(httpProperties)(this.customFetch);
   }
-  async delete<OutputType>(httpPropertiesType: HttpPropertiesType): Promise<OutputType>{
-
+  async delete<OutputType>(httpProperties: HttpPropertiesType): Promise<OutputType>{
+    return await this.fetchData(httpProperties)(this.customFetch);
   }
 }
 

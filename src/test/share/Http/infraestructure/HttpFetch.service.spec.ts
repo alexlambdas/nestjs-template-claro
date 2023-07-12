@@ -1,169 +1,94 @@
 import { Test } from "@nestjs/testing";
-import { FetchPropertiesType } from "../../../../src/main/share/domain/types/CustomTypes.types";
-import { HttpFetchService } from "../../../main/share/Http/infraestructure/httpFetch.service"
+import { HttpPropertiesType } from "../../../../main/share/Http/domain/types/CustomTypes.types";
+import { CustomHttpService } from "../../../../main/share/Http/infraestructure/CustomHttp.service"
 
 describe('HttpFetchService', () => {
 
   //
-  let httpFetchService: HttpFetchService;
+  let http: CustomHttpService;
 
   //
   beforeEach(async () => {
 
     const moduleRef = await Test.createTestingModule({
-      providers: [HttpFetchService]
+      providers: [CustomHttpService]
     }).compile();
 
-    httpFetchService = moduleRef.get<HttpFetchService>(HttpFetchService);
+    http = moduleRef.get<CustomHttpService>(CustomHttpService);
   })
 
   //
   it('test :: function customFetch :: normal case', async () => {
 
-    const url: string = 'https://jsonplaceholder.typicode.com/todos/1';
-
-    const properties: FetchPropertiesType = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    }
-    
-    const finalResult = {
-      "userId": 1,
-      "id": 1,
-      "title": "delectus aut autem",
-      "completed": false
-    }
-
-    const expectedResult = await httpFetchService.customFetch(url,properties);
-
-    expect(expectedResult).toEqual(finalResult);
-
-  })
-
-  //
-  it('test :: function customSetTimeOut :: normal case', async () => {
-
-    const url: string = 'https://jsonplaceholder.typicode.com/todos/1';
-
-    const properties: FetchPropertiesType = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
+    type User = {
+      userId: number;
+      id: number;
+      title: string;
+      completed: boolean;
     };
 
-    const timeout = 4000;
-    
-    const finalResult = {
+    const finalResponse: User = {
       "userId": 1,
       "id": 1,
       "title": "delectus aut autem",
       "completed": false
-    }
+    };
 
-    const customFetchAndTimeout = httpFetchService.customFetchAndTimeout(url, properties, timeout);
-    const customFetch = httpFetchService.customFetch;
+    const httpProperties: HttpPropertiesType = {
+      url: 'https://jsonplaceholder.typicode.com/todos/1',
+      timeout: 5000,
+      properties: {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    };
+    
+    const response: User = await http.customFetch<User>(httpProperties);
 
-    expect(await (customFetchAndTimeout)(customFetch)).toEqual(finalResult);
+    expect(response).toEqual(finalResponse);
 
   })
 
   //
-  it('test :: function fetchData :: normal case', async () => {
+  it('test :: funciton customFetchAndTimeout :: normal case', async () => {
 
-    const url: string = 'https://jsonplaceholder.typicode.com/todos/1';
-    const timeout = 3000;
-
-    const properties: FetchPropertiesType = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
+    type PokemonSearch = {
+      count: number;
+      next: string;
+      previous: string;
+      results: [{ name: string, url: string}]
     };
 
     const finalResponse = {
-      "userId": 1,
-      "id": 1,
-      "title": "delectus aut autem",
-      "completed": false
+      "count": 1281,
+      "next": "https://pokeapi.co/api/v2/pokemon/?offset=2&limit=1",
+      "previous": "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=1",
+      "results": [
+        {
+        "name": "ivysaur",
+        "url": "https://pokeapi.co/api/v2/pokemon/2/"
+        }
+      ]
     };
 
-    const fetchData = httpFetchService.fetchData(url,properties,timeout);
-    const customFetch = httpFetchService.customFetch;
-
-    expect(await (fetchData)(customFetch)).toEqual(finalResponse);
-  })
-
-  //
-  it('test :: function fetchData :: normal case', async () => {
-
-    const url: string = 'https://jsonplaceholder.typicode.com/todos/1';
-    const timeout = 3000;
-
-    const properties: FetchPropertiesType = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const httpProperties: HttpPropertiesType = {
+      url: 'https://pokeapi.co/api/v2/pokemon/?offset=1&limit=1',
+      timeout: 5000,
+      properties: {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       }
     };
 
-    const finalResponse = {
-      "id":1,
-      "firstName":"Virge",
-      "lastName":"McCurdy",
-      "carMakeId":1
-    };
-    
-    const fetchData = httpFetchService.fetchData(url,properties,timeout);
-    const customFetchMock = (url: string,properties: FetchPropertiesType) => finalResponse;
+    const customFetchAndTimeout = http.customFetchAndTimeout(httpProperties);
+    const customFetch = http.customFetch;
+    const response: PokemonSearch = await (customFetchAndTimeout)(customFetch);
 
-    expect(await (fetchData)(customFetchMock)).toEqual(finalResponse);
-  })
-
-  //
-  it('test :: function fetchData :: error case', async () => {
-
-    const url: string = 'https://jsonplaceholder.typicode.com/todos/1';
-    const timeout = 1;
-
-    const properties: FetchPropertiesType = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    };
-
-    const finalResponse: string = `timeout`;
-    
-    const fetchData = httpFetchService.fetchData(url,properties,timeout);
-    const customFetch = httpFetchService.customFetch;
-
-    expect(await (fetchData)(customFetch)).toBe(finalResponse);
-  })
-
-  //
-  it('test :: function fetchData :: error case', async () => {
-
-    const url: string = 'https://jsonplaceholderrr.typicode.com/todos/1';
-    const timeout = 4000;
-
-    const properties: FetchPropertiesType = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    };
-
-    const finalResponse: string = `timeout`;
-    
-    const fetchData = httpFetchService.fetchData(url,properties,timeout);
-    const customFetch = httpFetchService.customFetch;
-
-    const response = await (fetchData)(customFetch);
-    console.log(response.toString());
+    expect(response).toEqual(finalResponse);
 
   })
-
 })
