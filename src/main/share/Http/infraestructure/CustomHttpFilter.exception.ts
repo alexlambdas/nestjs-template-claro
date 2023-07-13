@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Injectable, UseInterceptors } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Injectable } from "@nestjs/common";
 import { Request, Response } from "express";
 import { FaultDto } from "../domain/dtos/Fault.dto";
 import { fnReduceMessageType } from "../domain/types/CustomTypes.types";
@@ -16,9 +16,6 @@ import { fnReduceMessageType } from "../domain/types/CustomTypes.types";
 @Catch(HttpException)
 @Injectable()
 export class CustomHttpFilterException implements ExceptionFilter{
-
-
-    constructor(){}
 
     catch(exception: any, host: ArgumentsHost) {
 

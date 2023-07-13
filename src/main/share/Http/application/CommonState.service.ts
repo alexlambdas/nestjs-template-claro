@@ -29,11 +29,8 @@ export class CommonStateService{
      * 
      */
 
-    setControllerPayload = (obj: PayloadType) => this.controllerPayload = {...obj};
-    getControllerPayload = (): PayloadType => this.controllerPayload;
-
-    setConnectionLayer = (obj: PayloadType) => this.connectionPayload = {...obj};
-    getConnectionLayer = (): PayloadType => this.connectionPayload;
+    setPayload = (obj: PayloadType) => this.connectionPayload = {...obj};
+    getPayload = (): PayloadType => this.connectionPayload;
 
     setTransactionId = (transactionId: string) => this.transactionId = transactionId;
     getTransactionId = (): string => this.transactionId;
@@ -44,17 +41,11 @@ export class CommonStateService{
     setUrlBackend = (urlBackend: string) => this.urlBackend = urlBackend;
     getUrlBackend = (): string => this.urlBackend;
 
-    setTimeInitController = (timeInitController: number) => this.timeInitController = timeInitController;
-    getTimeInitController = (): number => this.timeInitController;
+    setTimeInit = (timeInitConnectivity: number) => this.timeInitConnectivity = timeInitConnectivity;
+    getTimeInit = (): number => this.timeInitConnectivity;
 
-    setTimeEndController = (timeEndController: number) => this.timeEndController = timeEndController;
-    getTimeEndController = (): number => this.timeEndController;
-
-    setTimeInitConnectivity = (timeInitConnectivity: number) => this.timeInitConnectivity = timeInitConnectivity;
-    getTimeInitConnectivity = (): number => this.timeInitConnectivity;
-
-    setTimeEndConnectivity = (timeEndConnectivity: number) => this.timeEndConnectivity = timeEndConnectivity;
-    getTimeEndConnectivity = (): number => this.timeEndConnectivity;
+    setTimeEnd = (timeEndConnectivity: number) => this.timeEndConnectivity = timeEndConnectivity;
+    getTimeEnd = (): number => this.timeEndConnectivity;
 
     setMetaDataType = (metaDataType: MetaDataType) => this.metaDataType = {...metaDataType};
     getMetaDataType = (): MetaDataType => this.metaDataType;

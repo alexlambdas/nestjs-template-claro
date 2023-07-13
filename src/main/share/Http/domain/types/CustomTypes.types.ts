@@ -2,18 +2,16 @@
 export type fnReduceMessageType = (prev: string, current: string) => string;
 
 //
-export type HttpPropertiesType = {
+export type PropertiesType = {
   url: string;
   timeout: number;
-  properties: FetchPropertiesType;
-}
-
-type FetchPropertiesType = {
-  method: string;
-  headers: {
-    [key: string]: string
-  };
-  body?: any;
+  properties: {
+    method: string;
+    headers: {
+      [key: string]: string
+    };
+    body?: any;
+  }
 }
 
 //
