@@ -5,7 +5,8 @@ export type fnReduceMessageType = (prev: string, current: string) => string;
 export type PropertiesType = {
   url: string;
   timeout: number;
-  properties: {
+  transactionId: string;
+  httpProperties: {
     method: string;
     headers: {
       [key: string]: string
@@ -52,17 +53,6 @@ export enum VerbEnumType {
   UPDATE_ONE,
   POST_ONE,
   DELETE_ONE,
-}
-
-//
-export type MetaDataType = {
-  applicationName: string;
-  methodName: string;
-  timeout: number;
-  transactionId: string;
-  verb: VerbEnumType;
-  urlBackEnd: string;
-  bodyIn: any;
 }
 
 //

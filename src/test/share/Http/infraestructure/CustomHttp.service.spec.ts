@@ -29,7 +29,8 @@ describe('CustomHttpService', () => {
     const httpProperties: PropertiesType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: 5000,
-      properties: {
+      transactionId: '61e03b60-1244-4bd3-8f8b-ddb453cbde32',
+      httpProperties: {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +68,8 @@ describe('CustomHttpService', () => {
     const httpProperties: PropertiesType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: Number.MIN_VALUE,
-      properties: {
+      transactionId: '61e03b60-1244-4bd3-8f8b-ddb453cbde32',
+      httpProperties: {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

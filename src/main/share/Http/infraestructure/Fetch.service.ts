@@ -6,10 +6,10 @@ import fetch from "cross-fetch";
 @Injectable()
 export class FetchService {
 
-  async customFetch<OutputType>(httpProperties: PropertiesType): Promise<OutputType> {
-    const { url, properties } = httpProperties;
+  async customFetch<OutputType>(properties: PropertiesType): Promise<OutputType> {
+    const { url, httpProperties } = properties;
     try {
-      return (await fetch(url, properties)).json();
+      return (await fetch(url, httpProperties)).json();
     }
     catch (err) {
       throw new CustomHttpCatchException({ code: 500, description: String(err) });
