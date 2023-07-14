@@ -43,6 +43,7 @@ describe('FetchService', () => {
     const httpProperties: PropertiesType = {
       url: 'https://pokeapi.co/api/v2/pokemon/?offset=1&limit=1',
       timeout: 5000,
+      transactionId: 'aaaaa',
       httpProperties: {
         method: 'GET',
         headers: {
@@ -71,6 +72,7 @@ describe('FetchService', () => {
     const httpProperties: PropertiesType = {
       url: 'https://pokeapi.co/api/v2/pokemonn/?offset=1&limit=1',
       timeout: 5000,
+      transactionId: 'aaaaa',
       httpProperties: {
         method: 'GET',
         headers: {

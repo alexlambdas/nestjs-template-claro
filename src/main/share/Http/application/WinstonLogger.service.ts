@@ -1,5 +1,5 @@
 import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from "@nestjs/common";
-import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
 import { ConfigAppHttpService } from "./ConfigAppHttp.service";
 import { Request } from "express";
@@ -10,7 +10,7 @@ export class WinstonLoggerService implements NestInterceptor{
 
   constructor(
     private configApp: ConfigAppHttpService,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger
   ){}
 
   getTimeZone(date: Date): string{
@@ -40,6 +40,10 @@ export class WinstonLoggerService implements NestInterceptor{
     this.configApp.setPayload({...objPayload, bodyOut: data})
   }
 
+  setTimeEnd(dateNow: number): void{
+    this.configApp.setTimeEnd(dateNow);
+  }
+
   buildLoggerVO(): LoggerType{
     return{
       applicationName: this.configApp.getApplicationName(),
@@ -58,6 +62,8 @@ export class WinstonLoggerService implements NestInterceptor{
     }
   }
 
+  
+
   intercept(host: ExecutionContext, next: CallHandler): Observable<any>{
 
     const context = host.switchToHttp();
@@ -71,6 +77,7 @@ export class WinstonLoggerService implements NestInterceptor{
       .pipe(tap((data) => {
 
         // after
+        this.setTimeEnd(Date.now());
         this.setPayloadResponse(data);
         const loggerVO: LoggerType = this.buildLoggerVO();
         const childLogger: any = this.logger.child(loggerVO);

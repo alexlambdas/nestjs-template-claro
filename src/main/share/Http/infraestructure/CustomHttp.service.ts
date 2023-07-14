@@ -1,19 +1,20 @@
-import { Injectable, UseInterceptors } from "@nestjs/common";
+import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
 import { PayloadType, PropertiesType } from "../domain/types/CustomTypes.types";
 import { CustomHttpRepository } from "../application/CustomHttp.repository";
 import { FetchService } from "./Fetch.service";
 import { CustomHttpCatchException } from "../application/CustomHttpCatch.exception";
 import { WinstonLoggerService } from "../application/WinstonLogger.service";
 import { ConfigAppHttpService } from "../application/ConfigAppHttp.service";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
 
 @Injectable()
-@UseInterceptors(WinstonLoggerService)
 export class CustomHttpService implements CustomHttpRepository{
 
   constructor(
-    private configApp: ConfigAppHttpService,
-    private readonly fetchService: FetchService
+    private readonly configApp: ConfigAppHttpService,
+    private readonly fetchService: FetchService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger
     ){}
 
   /**
@@ -71,15 +72,10 @@ export class CustomHttpService implements CustomHttpRepository{
     this.configApp.setPayload({...objPayload, bodyIn: bodyIn});
   }
 
-  setTimeEnd(dateNow: number): void{
-    this.configApp.setTimeEnd(dateNow);
-  }
-
+  @UseInterceptors(WinstonLoggerService)
   async get<OutputType>(properties: PropertiesType): Promise<OutputType>{
     this.setPayloadRequest(properties.httpProperties.body);
-    const response = await this.fetchData(properties)(this.fetchService.customFetch);  
-    this.setTimeEnd(Date.now());
-    return response;  
+    return this.fetchData(properties)(this.fetchService.customFetch);   
   }
 
   async post<OutputType>(properties: PropertiesType): Promise<OutputType>{

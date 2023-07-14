@@ -2,25 +2,36 @@ import { Test } from "@nestjs/testing";
 import { PropertiesType } from "../../../../main/share/Http/domain/types/CustomTypes.types";
 import { CustomHttpService } from "../../../../main/share/Http/infraestructure/CustomHttp.service";
 import { FetchService } from "../../../../main/share/Http/infraestructure/Fetch.service";
+import { ConfigAppHttpService } from "../../../../main/share/Http/application/ConfigAppHttp.service";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { ConfigService } from "@nestjs/config";
 
 describe('CustomHttpService', () => {
 
   //
   let customFetch: FetchService;
   let http: CustomHttpService;
+  let configApp: ConfigAppHttpService;
 
   //
   beforeEach(async () => {
 
     const moduleRef = await Test.createTestingModule({
       providers: [
-        FetchService,
         CustomHttpService,
+        ConfigAppHttpService,
+        FetchService,
+        ConfigService,
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useValue: {}
+        }
       ]
     }).compile();
 
-    customFetch = moduleRef.get<FetchService>(FetchService);
     http = moduleRef.get<CustomHttpService>(CustomHttpService);
+    configApp = moduleRef.get<ConfigAppHttpService>(ConfigAppHttpService);
+    customFetch = moduleRef.get<FetchService>(FetchService);
   })
   
   //
