@@ -15,19 +15,19 @@ export class HttpCatchException extends HttpException{
     /**
      * 
      * @description
-     * This constructor accepts as an argument a "CustomHttpCatchException" object and pass this to the
+     * This constructor accepts as an argument a "HttpCatchException" object and pass this to the
      * constructor of "HttpException".
      * 
-     * @param err 
+     * @param error 
      * custom type CustomHttpCatchException,
      * 
      */
-    constructor(err: HttpCatchExceptionType){
+    constructor(error: HttpCatchExceptionType){
 
         /**
          * 
          * @description
-         * This constructor receives a object "CustomHttpCatchException" like this:
+         * This constructor receives a object "HttpCatchException" like this:
          * 
          * {
          *      "description": "string description error",
@@ -42,6 +42,6 @@ export class HttpCatchException extends HttpException{
          * }
          * 
          */
-        super(err.description.toString(), err.code);
+        super(error.description.toString(), error.code);
     }
 }

@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Injectable } from "@nestjs/common";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { FaultDto } from "../domain/dtos/Fault.dto";
 import { errorObjectPropertiesType } from "../domain/types/Types.types";
 import features from "../application/Features";
