@@ -1,8 +1,8 @@
 import { Global, Module } from "@nestjs/common";
 import { HttpService } from "./infraestructure/Http.service";
-import { ConfigAppHttpService } from "./application/ConfigAppHttp.service";
+import { HttpConfigAppService } from "./application/HttpConfigApp.service";
 import { WinstonLoggerService } from "./application/WinstonLogger.service";
-import { I_CUSTOM_HTTP_REPOSITORY } from "./application/CustomHttp.repository";
+import { I_HTTP_REPOSITORY } from "./application/Http.repository";
 import { WinstonModule } from "nest-winston";
 import * as winston from 'winston';
 import { APP_INTERCEPTOR } from "@nestjs/core";
@@ -15,11 +15,11 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
 		}),
   ],
   providers: [
-    ConfigAppHttpService,
+    HttpConfigAppService,
     HttpService,
     {
       useClass: HttpService,
-      provide: I_CUSTOM_HTTP_REPOSITORY,
+      provide: I_HTTP_REPOSITORY,
     },
     {
       useClass: WinstonLoggerService,
@@ -29,7 +29,7 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
   exports: [
     {
       useClass: HttpService,
-      provide: I_CUSTOM_HTTP_REPOSITORY,
+      provide: I_HTTP_REPOSITORY,
     }
   ]
 })

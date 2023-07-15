@@ -1,5 +1,5 @@
 import { HttpException } from "@nestjs/common";
-import { CustomHttpCatchExceptionType } from "../domain/types/CustomTypes.types";
+import { HttpCatchExceptionType } from "../domain/types/Types.types";
 
 /**
  * 
@@ -10,7 +10,7 @@ import { CustomHttpCatchExceptionType } from "../domain/types/CustomTypes.types"
  * "CustomHttpCatchException()" object from any microservice component's.
  * 
  */
-export class CustomHttpCatchException extends HttpException{
+export class HttpCatchException extends HttpException{
 
     /**
      * 
@@ -22,7 +22,7 @@ export class CustomHttpCatchException extends HttpException{
      * custom type CustomHttpCatchException,
      * 
      */
-    constructor(err: CustomHttpCatchExceptionType){
+    constructor(err: HttpCatchExceptionType){
 
         /**
          * 

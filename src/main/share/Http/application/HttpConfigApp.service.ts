@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PayloadType } from "../domain/types/CustomTypes.types";
+import { PayloadType } from "../domain/types/Types.types";
 
 
 
 @Injectable()
-export class ConfigAppHttpService {
+export class HttpConfigAppService {
 
   //
   private connectionPayload: PayloadType;
@@ -53,7 +53,7 @@ export class ConfigAppHttpService {
   getVerb = (): string => this.verb;
 
   setUrlApi = (urlApi: string) => this.urlApi = urlApi;
-  geUrlApi = (): string => this.urlApi;
+  getUrlApi = (): string => this.urlApi;
 
   setTimeInit = (timeInitConnectivity: number) => this.timeInitConnectivity = timeInitConnectivity;
   getTimeInit = (): number => this.timeInitConnectivity;

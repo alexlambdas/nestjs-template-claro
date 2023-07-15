@@ -1,18 +1,18 @@
 import { Inject, Injectable, UseInterceptors } from "@nestjs/common";
-import { PropertiesType } from "../domain/types/CustomTypes.types";
-import { CustomHttpRepository } from "../application/CustomHttp.repository";
-import { CustomHttpCatchException } from "../application/CustomHttpCatch.exception";
+import { PropertiesType } from "../domain/types/Types.types";
+import { HttpRepository } from "../application/Http.repository";
+import { HttpCatchException } from "../application/HttpCatch.exception";
 import { WinstonLoggerService } from "../application/WinstonLogger.service";
-import { ConfigAppHttpService } from "../application/ConfigAppHttp.service";
+import { HttpConfigAppService } from "../application/HttpConfigApp.service";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { fetchData} from "./Fetch.service";
+import features from "../application/Features";
 
 
 @Injectable()
-export class HttpService implements CustomHttpRepository{
+export class HttpService implements HttpRepository{
 
   constructor(
-    private readonly configApp: ConfigAppHttpService, 
+    private readonly configApp: HttpConfigAppService, 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger
   ){}
 
@@ -22,12 +22,12 @@ export class HttpService implements CustomHttpRepository{
   }
   
   @UseInterceptors(WinstonLoggerService)
-  get<T>(props: PropertiesType):(fx: (args0: PropertiesType) => Promise<T>) => Promise<T>{
+  curryGET<T>(props: PropertiesType):(fx: (_: PropertiesType) => Promise<T>) => Promise<T>{
 
-    const fy = fetchData<T>;
+    const fy = features.curryFetch<T>;
     this.setPayloadRequest(props.httpProperties.body);
 
-    return async function(fx: (arg0: PropertiesType) => Promise<T>): Promise<T>{
+    return async function(fx: (_: PropertiesType) => Promise<T>): Promise<T>{
       return await fy(props)(fx); 
     } 
   }

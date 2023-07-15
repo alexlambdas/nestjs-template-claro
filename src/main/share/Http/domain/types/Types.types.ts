@@ -1,7 +1,6 @@
 //
 export type fnReduceMessageType = (prev: string, current: string) => string;
 
-
 //
 export type PropertiesType = {
   url: string;
@@ -17,10 +16,7 @@ export type PropertiesType = {
 }
 
 //
-export type FetchFunction = <T>(arg0: PropertiesType) => Promise<T>;
-
-//
-export type CustomHttpCatchExceptionType = {
+export type HttpCatchExceptionType = {
   code: number;
   description: string;
 }
@@ -50,19 +46,16 @@ export type LoggerType = {
 }
 
 //
-export enum VerbEnumType {
-  GET_ALL,
-  GET_BY_PARAMS,
-  GET_BY_ID,
-  UPDATE_ONE,
-  POST_ONE,
-  DELETE_ONE,
-}
-
-//
 export type PayloadType = {
   bodyIn: any,
   bodyOut: any,
+}
+
+//
+export type errorObjectPropertiesType = {
+  internalFault: any,
+  urlApi: string,
+  fnReduceMessage: (prev: string, current:string) => string,
 }
 
 

@@ -1,32 +1,18 @@
 import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
-import { ConfigAppHttpService } from "./ConfigAppHttp.service";
+import { HttpConfigAppService } from "./HttpConfigApp.service";
 import { Request } from "express";
-import { LoggerType, PayloadType } from "../domain/types/CustomTypes.types";
+import { LoggerType, PayloadType } from "../domain/types/Types.types";
+import common from "./Features";
 
 @Injectable()
 export class WinstonLoggerService implements NestInterceptor{
 
   constructor(
-    private configApp: ConfigAppHttpService,
+    private configApp: HttpConfigAppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger
   ){}
-
-  getTimeZone(date: Date): string{
-
-    const gmtZuluDate = date;
-    const year = gmtZuluDate.getFullYear();
-    const month = gmtZuluDate.getMonth();
-    const day = gmtZuluDate.getDate();
-    const hours = gmtZuluDate.getHours() - 5;
-    const minutes = gmtZuluDate.getMinutes();
-    const seconds = gmtZuluDate.getSeconds();
-    const gmt05Date = new Date(year, month, day, hours, minutes, seconds);
-
-    //
-    return gmt05Date.toISOString().split(".")[0];
-  }
 
   setCustomHttpState(request: Request): void{
     this.configApp.setTransactionId(String(request.headers['transactionid']));
@@ -54,8 +40,8 @@ export class WinstonLoggerService implements NestInterceptor{
       layer: "INFRAESTRUCTURE_CONNECTIVITY",
       message: "exitoso",
       processingTime: (this.configApp.getTimeEnd() - this.configApp.getTimeInit())/1000,
-      timestamp: this.getTimeZone(new Date()),
-      urlApi: this.configApp.geUrlApi(),
+      timestamp: common.getTimeZone(new Date()),
+      urlApi: this.configApp.getUrlApi(),
       urlBackend: this.configApp.getUrlBackend(),
       request: this.configApp.getPayload().bodyIn,
       response: this.configApp.getPayload().bodyOut,

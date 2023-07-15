@@ -1,10 +1,10 @@
-import { PropertiesType } from "../domain/types/CustomTypes.types";
+import { PropertiesType } from "../domain/types/Types.types";
 
-export const I_CUSTOM_HTTP_REPOSITORY = 'I_CUSTOM_HTTP_REPOSITORY';
+export const I_HTTP_REPOSITORY = 'I_HTTP_REPOSITORY';
 
-export interface CustomHttpRepository {
+export interface HttpRepository {
 
-  get: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
+  curryGET: <T>(_: PropertiesType) => (fx: (_: PropertiesType) => Promise<T>) => Promise<T>;
   //post: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
   //put: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
   //delete: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;

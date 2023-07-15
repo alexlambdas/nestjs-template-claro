@@ -2,16 +2,16 @@ import { Controller, Get, Inject, Query } from "@nestjs/common";
 import { QueryUserToDo } from "../domain/dtos/QueryUserToDo.dto";
 import { UserToDoType } from "../domain/types/Custom.types";
 import { ConfigService } from "@nestjs/config";
-import { CustomHttpRepository, I_CUSTOM_HTTP_REPOSITORY } from "../../share/Http/application/CustomHttp.repository";
-import { PropertiesType } from "src/main/share/Http/domain/types/CustomTypes.types";
-import { fetchCustom } from "src/main/share/Http/infraestructure/Fetch.service";
+import { HttpRepository, I_HTTP_REPOSITORY } from "../../share/Http/application/Http.repository";
+import { PropertiesType } from "src/main/share/Http/domain/types/Types.types";
+import { fetchCustom } from "src/main/share/Http/application/Features";
 
 @Controller('/api/path/nestjs/template')
 export class AppFetchController{
 
   constructor(
     private configService: ConfigService,
-    @Inject(I_CUSTOM_HTTP_REPOSITORY) private http: CustomHttpRepository,
+    @Inject(I_HTTP_REPOSITORY) private http: HttpRepository,
     ){}
 
   @Get('/todos/')
@@ -30,6 +30,6 @@ export class AppFetchController{
     }
 
     //return responseUser;
-    return await this.http.get<UserToDoType>(properties)(fetchCustom);
+    return await this.http.curryGET<UserToDoType>(properties)(fetchCustom);
   }
 }

@@ -1,16 +1,16 @@
 import { Test } from "@nestjs/testing";
-import { PropertiesType } from "../../../../main/share/Http/domain/types/CustomTypes.types";
+import { PropertiesType } from "../../../../main/share/Http/domain/types/Types.types";
 import { HttpService } from "../../../../main/share/Http/infraestructure/Http.service";
-import { ConfigAppHttpService } from "../../../../main/share/Http/application/ConfigAppHttp.service";
+import { HttpConfigAppService } from "../../../../main/share/Http/application/HttpConfigApp.service";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
-import { fetchData } from "../../../../main/share/Http/infraestructure/Fetch.service";
+import Fetch from "../../../../main/share/Http/application/Features";
 
 describe('CustomHttpService', () => {
 
   //
   let http: HttpService;
-  let configApp: ConfigAppHttpService;
+  let configApp: HttpConfigAppService;
   let numberOfTest: number = 0;
 
   //
@@ -19,7 +19,7 @@ describe('CustomHttpService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         HttpService,
-        ConfigAppHttpService,
+        HttpConfigAppService,
         ConfigService,
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -29,7 +29,7 @@ describe('CustomHttpService', () => {
     }).compile();
 
     http = moduleRef.get<HttpService>(HttpService);
-    configApp = moduleRef.get<ConfigAppHttpService>(ConfigAppHttpService);
+    configApp = moduleRef.get<HttpConfigAppService>(HttpConfigAppService);
   })
   
   //
@@ -65,7 +65,7 @@ describe('CustomHttpService', () => {
       return responseUser;
     };
 
-    const response: User = await (fetchData<User>(properties))(fetchCustomMock);
+    const response: User = await (Fetch.curryFetch<User>(properties))(fetchCustomMock);
     
     expect(response).toEqual(responseUser);
 
@@ -104,7 +104,7 @@ describe('CustomHttpService', () => {
       return new Promise((resolve,_) => setTimeout(() => resolve(responseUser),10));
     };
     
-    expect(async () => await (fetchData<User>(httpProperties))(customFetchMock)).rejects.toThrow(Error);
+    expect(async () => await (Fetch.curryFetch<User>(httpProperties))(customFetchMock)).rejects.toThrow(Error);
 
   })
 
@@ -141,7 +141,7 @@ describe('CustomHttpService', () => {
       return responseUser;
     };
 
-    const response: User = await (http.get<User>(properties))(fetchCustomMock);
+    const response: User = await (http.curryGET<User>(properties))(fetchCustomMock);
     
     expect(response).toEqual(responseUser);
 
