@@ -4,7 +4,7 @@ import { UserToDoType } from "../domain/types/Custom.types";
 import { ConfigService } from "@nestjs/config";
 import { HttpRepository, I_HTTP_REPOSITORY } from "../../share/Http/application/Http.repository";
 import { PropertiesType } from "src/main/share/Http/domain/types/Types.types";
-import { fetchCustom } from "src/main/share/Http/application/Features";
+import features from "src/main/share/Http/application/Features";
 
 @Controller('/api/path/nestjs/template')
 export class AppFetchController{
@@ -29,7 +29,6 @@ export class AppFetchController{
       }
     }
 
-    //return responseUser;
-    return await this.http.curryGET<UserToDoType>(properties)(fetchCustom);
+    return await this.http.curryGET<UserToDoType>(properties)(features.httpCall);
   }
 }
