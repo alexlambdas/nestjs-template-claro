@@ -4,9 +4,9 @@ export const I_CUSTOM_HTTP_REPOSITORY = 'I_CUSTOM_HTTP_REPOSITORY';
 
 export interface CustomHttpRepository {
 
-  get: <OutputType>(properties: PropertiesType) => Promise<OutputType>;
-  post: <OutputType>(properties: PropertiesType) => Promise<OutputType>;
-  put: <OutputType>(properties: PropertiesType) => Promise<OutputType>;
-  delete: <OutputType>(properties: PropertiesType) => Promise<OutputType>;
+  get: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
+  //post: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
+  //put: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
+  //delete: <T>(props: PropertiesType) => (fx: (props: PropertiesType) => Promise<T>) => Promise<T>;
 
 }

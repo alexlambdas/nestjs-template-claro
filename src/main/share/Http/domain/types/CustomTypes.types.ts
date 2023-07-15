@@ -1,6 +1,7 @@
 //
 export type fnReduceMessageType = (prev: string, current: string) => string;
 
+
 //
 export type PropertiesType = {
   url: string;
@@ -14,6 +15,9 @@ export type PropertiesType = {
     body?: any;
   }
 }
+
+//
+export type FetchFunction = <T>(arg0: PropertiesType) => Promise<T>;
 
 //
 export type CustomHttpCatchExceptionType = {

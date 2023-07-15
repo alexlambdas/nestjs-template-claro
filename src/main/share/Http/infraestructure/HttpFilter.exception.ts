@@ -15,7 +15,7 @@ import { fnReduceMessageType } from "../domain/types/CustomTypes.types";
  */
 @Catch(HttpException)
 @Injectable()
-export class CustomHttpFilterException implements ExceptionFilter{
+export class HttpFilterException implements ExceptionFilter{
 
     catch(exception: any, host: ArgumentsHost) {
 

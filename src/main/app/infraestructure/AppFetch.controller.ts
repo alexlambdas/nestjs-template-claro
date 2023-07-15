@@ -1,9 +1,10 @@
-import { Controller, Get, Inject, OnModuleInit, Query } from "@nestjs/common";
+import { Controller, Get, Inject, Query } from "@nestjs/common";
 import { QueryUserToDo } from "../domain/dtos/QueryUserToDo.dto";
 import { UserToDoType } from "../domain/types/Custom.types";
 import { ConfigService } from "@nestjs/config";
 import { CustomHttpRepository, I_CUSTOM_HTTP_REPOSITORY } from "../../share/Http/application/CustomHttp.repository";
 import { PropertiesType } from "src/main/share/Http/domain/types/CustomTypes.types";
+import { fetchCustom } from "src/main/share/Http/infraestructure/Fetch.service";
 
 @Controller('/api/path/nestjs/template')
 export class AppFetchController{
@@ -27,6 +28,8 @@ export class AppFetchController{
         }
       }
     }
-    return this.http.get<UserToDoType>(properties);
+
+    //return responseUser;
+    return await this.http.get<UserToDoType>(properties)(fetchCustom);
   }
 }

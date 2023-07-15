@@ -1,6 +1,5 @@
 import { Global, Module } from "@nestjs/common";
-import { FetchService } from "./infraestructure/Fetch.service";
-import { CustomHttpService } from "./infraestructure/CustomHttp.service";
+import { HttpService } from "./infraestructure/Http.service";
 import { ConfigAppHttpService } from "./application/ConfigAppHttp.service";
 import { WinstonLoggerService } from "./application/WinstonLogger.service";
 import { I_CUSTOM_HTTP_REPOSITORY } from "./application/CustomHttp.repository";
@@ -16,11 +15,10 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
 		}),
   ],
   providers: [
-    FetchService,
     ConfigAppHttpService,
-    CustomHttpService,
+    HttpService,
     {
-      useClass: CustomHttpService,
+      useClass: HttpService,
       provide: I_CUSTOM_HTTP_REPOSITORY,
     },
     {
@@ -30,7 +28,7 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
   ],
   exports: [
     {
-      useClass: CustomHttpService,
+      useClass: HttpService,
       provide: I_CUSTOM_HTTP_REPOSITORY,
     }
   ]
