@@ -1,47 +1,17 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
-import { Request, Response } from "express";
-import { HttpConfigAppService } from "../application/HttpConfigApp.service";
-import { HttpExceptionFilterType, HttpExceptionType } from "../domain/types/CommonTypes.types";
+import { ArgumentsHost, ExceptionFilter } from "@nestjs/common";
+import { Request, Response } from 'express';
 import FeaturesApp from "../application/FeaturesApp";
+import { HttpExceptionFilterType, HttpExceptionType } from "../domain/types/CommonTypes.types";
 
-
-/**
- * 
- * @author alexlambdas
- * 
- * @description
- * The main goal of this class is catch all thrown exception in any component of the project. It is possible why
- * implements the "ExceptionFilter" interface provided for Nestjs framework.
- * 
- */
-@Catch(HttpException)
-export class HttpFilterException implements ExceptionFilter {
-
-  constructor(private readonly configService: HttpConfigAppService){}
+export class HttpFilterDefault implements ExceptionFilter{
 
   reduceMsg(message: string | [string]): string{
-
+    
     if(Array.isArray(message)){
       return message.reduce((prev, current) => FeaturesApp.reduceMessage(prev,current), '');
     }
-
-    if(message.split(';').length > 1){
-      return message.split(';')[1];
-    }
-
-    return message;
+    else return message;
   }
-
-  setLayer(message: string): string {
-    let msg: string = 'CONTROLLER';
-
-    if(message.split(';').length > 1){
-      return message.split(';')[0];
-    }
-
-    return msg;
-  }
-
 
   catch(exception: any, host: ArgumentsHost) {
 
@@ -71,10 +41,7 @@ export class HttpFilterException implements ExceptionFilter {
         error: exceptionResponse.error,
         message: this.reduceMsg(exceptionResponse.message),
         date: FeaturesApp.getTimeZone(new Date()),
-        layer: this.setLayer(String(exceptionResponse.message)),
-        transactionId: this.configService.getTransactionId(),
-        urlApi: this.configService.getUrlApi(),
-        urlBackend: this.configService.getUrlBackend(), 
+        layer: 'CONTROLLER',
       }
     }
 
@@ -82,5 +49,4 @@ export class HttpFilterException implements ExceptionFilter {
       .status(exceptionResponse.statusCode)
       .json(httpException);
   }
-
 }

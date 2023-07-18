@@ -11,7 +11,7 @@ export class AppService {
     private readonly configApp: HttpConfigAppService,
     @Inject(I_HTTP_REPOSITORY) private readonly httpRepository: HttpRepository){}
 
-  async getAppService<T,R>(bodyIn: T): Promise<R>{
+  async getApp<T1,T2>(bodyIn: T1): Promise<T2>{
 
     const httpCall: FnHttpCallType = FeaturesApp.httpCall;
     const url: string = this.configApp.getUrlBackend() + FeaturesApp.transformObjectToStringQuery(bodyIn);
@@ -28,7 +28,27 @@ export class AppService {
       }
     };
 
-    return await this.httpRepository.curryGET<R>(httpProperties)(httpCall);
+    return await this.httpRepository.curryGET<T2>(httpProperties)(httpCall);
+  }
+
+  async postApp<T1,T2>(bodyIn: T1): Promise<T2>{
+
+    const httpCall: FnHttpCallType = FeaturesApp.httpCall;
+
+    const httpProperties: HttpPropertiesType = {
+      url: this.configApp.getUrlBackend(),
+      timeout: this.configApp.getTimeOut(),
+      props: {
+        method: this.configApp.getMethodPOST(),
+        headers: {
+          'Content-Type': 'application/json',
+          'transactionid': this.configApp.getTransactionId(),
+        },
+        body: JSON.stringify(bodyIn),
+      }
+    };
+
+    return await this.httpRepository.curryPost<T2>(httpProperties)(httpCall);
   }
 
 }

@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { HttpFilterDefault } from './main/app/infraestructure/HttpFilterDefault.exception';
 
 async function bootstrap() {
 
@@ -9,6 +10,7 @@ async function bootstrap() {
    * 
    */
   const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new HttpFilterDefault());
 
   /**
    * 

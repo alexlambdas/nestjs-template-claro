@@ -1,9 +1,10 @@
-import { Controller, Get, HttpException, HttpStatus, InternalServerErrorException, Query, RequestTimeoutException, UseFilters } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseFilters, UsePipes, ValidationPipe } from "@nestjs/common";
 import { HttpConfigAppService } from "../application/HttpConfigApp.service";
-import { QueryUserDto } from "../domain/dtos/User.dto";
+import { PayloadUserDto, QueryUserDto } from "../domain/dtos/User.dto";
 import { ResponseDto } from "../domain/dtos/Response.dto";
 import { AppService } from "../application/App.service";
 import { HttpFilterException } from "./HttpFilter.exception";
+import FeaturesApp from "../application/FeaturesApp";
 
 @Controller('/api/path/nestjs/template/users')
 @UseFilters(HttpFilterException)
@@ -15,19 +16,22 @@ export class AppController{
 
   @Get()
   async get(@Query() bodyIn: QueryUserDto): Promise<ResponseDto>{
-    
     try{
-      return await this.appService.getAppService<QueryUserDto,ResponseDto>(bodyIn);
+      return await this.appService.getApp<QueryUserDto,ResponseDto>(bodyIn);
+    }
+    catch(err){ 
+      FeaturesApp.handlerHttpException(err);
+    }
+  }
+
+  @Post()
+  @UsePipes(ValidationPipe)
+  async post(@Body() bodyIn: PayloadUserDto): Promise<ResponseDto>{
+    try{
+      return await this.appService.postApp<PayloadUserDto,ResponseDto>(bodyIn);
     }
     catch(err){
-      if(err === 'timeout'){
-        throw new RequestTimeoutException(err);
-      }
-      else{
-        throw new InternalServerErrorException(err);
-      }
+      FeaturesApp.handlerHttpException(err);
     }
-    
-    
   }
 }

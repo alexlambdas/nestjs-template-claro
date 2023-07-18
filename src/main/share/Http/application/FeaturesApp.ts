@@ -15,7 +15,7 @@ async function timeOutHttp(miliseconds: number): Promise<string>{
   }
 
   await timeOutHttp();
-  return 'timeout';
+  return 'CONNECTIVITY;ERROR_TIMEOUT';
 }
 
 //
@@ -26,8 +26,8 @@ function curryHttpCall<T>(props: HttpPropertiesType):((fx: (_: HttpPropertiesTyp
 
   function handlerOfPromise(value: any): any{
 
-    if(String(value) === 'timeout'){
-      throw ('timeout');
+    if(String(value) === 'CONNECTIVITY;ERROR_TIMEOUT'){
+      throw ('CONNECTIVITY;ERROR_TIMEOUT');
     }
     else{
       return value;
@@ -35,13 +35,13 @@ function curryHttpCall<T>(props: HttpPropertiesType):((fx: (_: HttpPropertiesTyp
   }
 
   function throwCatchException(err: any): void{
-    throw (String(err));
+    throw (String(`CONNECTIVITY;${err}`));
   }
 
   return async function(fx){
     return Promise
         .race([ fy(timeout), fx(props) ])
-        .then(value => handlerOfPromise(value))
+        .then(value => handlerOfPromise(value)) 
         .catch(err => throwCatchException(err))
   }
 }

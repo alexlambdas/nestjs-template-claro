@@ -12,9 +12,24 @@ export type HttpPropertiesType = {
 }
 
 //
+export type HttpExceptionFilterType = {
+  message: string | [string];
+  error: string;
+  statusCode: number;
+}
+
+//
 export type HttpExceptionType = {
-  status: number;
-  response: string;
+  exception: {
+    statusCode: number;
+    error: string;
+    message: string;
+    date: string;
+    layer: string;
+    transactionId?: string;
+    urlApi?: string;
+    urlBackend?: string;
+  }
 }
 
 //
