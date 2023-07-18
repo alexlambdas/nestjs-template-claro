@@ -1,4 +1,4 @@
-import { Global, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { HttpService } from "./infraestructure/Http.service";
 import { HttpConfigAppService } from "./application/HttpConfigApp.service";
 import { WinstonLoggerService } from "./application/WinstonLogger.service";

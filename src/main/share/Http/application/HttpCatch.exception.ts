@@ -3,7 +3,7 @@ import { HttpCatchExceptionType } from "../domain/types/CommonTypes.types";
 
 /**
  * 
- * @author alex
+ * @author alexlambdas
  * 
  * @description
  * This class implements the HttpException class from Nestjs framework and it will can catch all exception thrown with the

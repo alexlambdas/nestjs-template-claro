@@ -8,7 +8,7 @@ import features from "../application/Features";
 
 /**
  * 
- * @author Fábrica Digital
+ * @author alexlambdas
  * 
  * @description
  * The main goal of this class is catch all thrown exception in any component of the project. It is possible why

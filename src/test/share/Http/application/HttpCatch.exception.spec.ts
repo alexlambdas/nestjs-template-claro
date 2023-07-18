@@ -22,8 +22,6 @@ describe('HttpCatchException', () => {
 
     const responseFault = new HttpException(httpExceptionType.response, httpExceptionType.status);
 
-    
-
     expect(new HttpCatchException(httpCatchExceptionType)).toEqual(responseFault);
   })
   

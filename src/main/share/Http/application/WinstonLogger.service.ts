@@ -10,8 +10,7 @@ export class WinstonLoggerService implements NestInterceptor{
 
   constructor(
     private readonly configApp: HttpConfigAppService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger
-  ){}
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger){}
 
   setPayloadResponse(data: any): void{
     this.configApp.setPayloadResponse(data);
