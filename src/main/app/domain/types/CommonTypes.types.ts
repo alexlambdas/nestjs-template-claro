@@ -1,12 +1,8 @@
 //
-export type fnReduceMessageType = (prev: string, current: string) => string;
-
-//
-export type PropertiesType = {
+export type HttpPropertiesType = {
   url: string;
   timeout: number;
-  transactionId: string;
-  httpProperties: {
+  props: {
     method: string;
     headers: {
       [key: string]: string
@@ -46,16 +42,11 @@ export type LoggerType = {
 }
 
 //
-export type PayloadType = {
-  bodyIn: any,
-  bodyOut: any,
-}
-
-//
 export type errorObjectPropertiesType = {
   internalFault: any,
   urlApi: string,
   fnReduceMessage: (prev: string, current:string) => string,
 }
 
-
+//
+export type FnHttpCallType = <T>(_: HttpPropertiesType) => Promise<T>;

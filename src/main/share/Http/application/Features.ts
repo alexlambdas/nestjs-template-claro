@@ -1,13 +1,13 @@
 import { HttpCatchException } from "./HttpCatch.exception";
 import { FaultDto } from "../domain/dtos/Fault.dto";
-import { PropertiesType, errorObjectPropertiesType } from "../domain/types/Types.types";
+import { HttpPropertiesType, errorObjectPropertiesType } from "../domain/types/CommonTypes.types";
 import fetch from "cross-fetch";
 
 //
-async function httpCall<T>(props: PropertiesType): Promise<T>{
-  const { url, httpProperties } = props;
+async function httpCall<T>(httpProperties: HttpPropertiesType): Promise<T>{
+  const { url, props } = httpProperties;
   try {
-    return (await fetch(url, httpProperties)).json();
+    return (await fetch(url, props)).json();
   }
   catch (err) {
     throw new HttpCatchException({ code: 500, description: String(err) });
@@ -15,21 +15,21 @@ async function httpCall<T>(props: PropertiesType): Promise<T>{
 }
 
 //
-async function timeOut(miliseconds: number): Promise<string>{
+async function timeOutHttp(miliseconds: number): Promise<string>{
 
-  async function timeOutHttp(ms: number): Promise<any>{
-    return new Promise(resolve => setTimeout(resolve,ms));
+  async function timeOutHttp(): Promise<any>{
+    return new Promise(resolve => setTimeout(resolve,miliseconds));
   }
 
-  await timeOutHttp(miliseconds);
+  await timeOutHttp();
   return 'timeout';
 }
 
 //
-function curryFetch<T>(props: PropertiesType):((fx: (_: PropertiesType) => Promise<T>) => Promise<T>){
-    
+function curryHttpCall<T>(props: HttpPropertiesType):((fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>){
+  
   const { timeout } = props;
-  const fy = timeOut;
+  const fy = timeOutHttp;
 
   function handlerOfPromise(value: any): any{
     if(typeof value === 'string') throw new Error(`timeout de ${timeout/1000} segundos`);
@@ -37,9 +37,11 @@ function curryFetch<T>(props: PropertiesType):((fx: (_: PropertiesType) => Promi
   }
 
   function throwCatchException(err: string): void{
-    throw new Error('timeout')
+    console.log(err);
+    throw new Error(String(err));
   }
 
+  
   return async function(fx){
     return Promise
         .race([ fy(timeout), fx(props) ])
@@ -98,8 +100,8 @@ function createErrorObject(objProperties: errorObjectPropertiesType): FaultDto{
 
 export default {
   httpCall,
-  timeOut,
-  curryFetch,
+  timeOut: timeOutHttp,
+  curryHttpCall,
   getTimeZone,
   reduceMessage,
   createErrorObject

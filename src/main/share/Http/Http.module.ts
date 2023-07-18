@@ -6,6 +6,7 @@ import { I_HTTP_REPOSITORY } from "./application/Http.repository";
 import { WinstonModule } from "nest-winston";
 import * as winston from 'winston';
 import { APP_INTERCEPTOR } from "@nestjs/core";
+import { UpdateHttpConfigAppService } from "./application/UpdateHttpConfigApp.service";
 
 
 @Module({
@@ -20,6 +21,10 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
     {
       useClass: HttpService,
       provide: I_HTTP_REPOSITORY,
+    },
+    {
+      useClass: UpdateHttpConfigAppService,
+      provide: APP_INTERCEPTOR,
     },
     {
       useClass: WinstonLoggerService,

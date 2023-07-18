@@ -1,10 +1,10 @@
 import { Test } from "@nestjs/testing";
-import { PropertiesType } from "../../../../main/share/Http/domain/types/Types.types";
+import { HttpPropertiesType } from "../../../../main/share/Http/domain/types/CommonTypes.types";
 import { HttpService } from "../../../../main/share/Http/infraestructure/Http.service";
 import { HttpConfigAppService } from "../../../../main/share/Http/application/HttpConfigApp.service";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
-import Fetch from "../../../../main/share/Http/application/Features";
+import Features from "../../../../main/share/Http/application/Features";
 
 describe('CustomHttpService', () => {
 
@@ -35,11 +35,10 @@ describe('CustomHttpService', () => {
   //
   it(`test #${++numberOfTest} :: function fetchData :: normal case`, async () => {
 
-    const properties: PropertiesType = {
+    const properties: HttpPropertiesType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: 5000,
-      transactionId: '61e03b60-1244-4bd3-8f8b-ddb453cbde32',
-      httpProperties: {
+      props: {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -61,11 +60,11 @@ describe('CustomHttpService', () => {
       "completed": false
     };
 
-    async function fetchCustomMock(props: PropertiesType): Promise<any>{
+    async function fetchCustomMock(props: HttpPropertiesType): Promise<any>{
       return responseUser;
     };
 
-    const response: User = await (Fetch.curryFetch<User>(properties))(fetchCustomMock);
+    const response: User = await (Features.curryHttpCall<User>(properties))(fetchCustomMock);
     
     expect(response).toEqual(responseUser);
 
@@ -74,11 +73,10 @@ describe('CustomHttpService', () => {
   //
   it(`test #${++numberOfTest} :: function fetchData :: error case`, async () => {
 
-    const httpProperties: PropertiesType = {
+    const httpProperties: HttpPropertiesType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: Number.MIN_VALUE,
-      transactionId: '61e03b60-1244-4bd3-8f8b-ddb453cbde32',
-      httpProperties: {
+      props: {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -100,22 +98,21 @@ describe('CustomHttpService', () => {
       "completed": false
     };
 
-    const customFetchMock = async function(httpProperties: PropertiesType): Promise<any>{
+    const customFetchMock = async function(httpProperties: HttpPropertiesType): Promise<any>{
       return new Promise((resolve,_) => setTimeout(() => resolve(responseUser),10));
     };
     
-    expect(async () => await (Fetch.curryFetch<User>(httpProperties))(customFetchMock)).rejects.toThrow(Error);
+    expect(async () => await (Features.curryHttpCall<User>(httpProperties))(customFetchMock)).rejects.toThrow(Error);
 
   })
 
   //
   it(`test #${++numberOfTest} :: function get :: normal case`, async () => {
 
-    const properties: PropertiesType = {
+    const properties: HttpPropertiesType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: 5000,
-      transactionId: '61e03b60-1244-4bd3-8f8b-ddb453cbde32',
-      httpProperties: {
+      props: {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +134,7 @@ describe('CustomHttpService', () => {
       "completed": false
     };
 
-    async function fetchCustomMock(props: PropertiesType): Promise<any>{
+    async function fetchCustomMock(props: HttpPropertiesType): Promise<any>{
       return responseUser;
     };
 
@@ -146,5 +143,4 @@ describe('CustomHttpService', () => {
     expect(response).toEqual(responseUser);
 
   })
-
 })

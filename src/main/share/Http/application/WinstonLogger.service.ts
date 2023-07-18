@@ -2,28 +2,19 @@ import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } fr
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
 import { HttpConfigAppService } from "./HttpConfigApp.service";
-import { Request } from "express";
-import { LoggerType, PayloadType } from "../domain/types/Types.types";
+import { LoggerType } from "../domain/types/CommonTypes.types";
 import common from "./Features";
 
 @Injectable()
 export class WinstonLoggerService implements NestInterceptor{
 
   constructor(
-    private configApp: HttpConfigAppService,
+    private readonly configApp: HttpConfigAppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger
   ){}
 
-  setCustomHttpState(request: Request): void{
-    this.configApp.setTransactionId(String(request.headers['transactionid']));
-    this.configApp.setVerb(request.method);
-    this.configApp.setUrlApi(request.originalUrl);
-    this.configApp.setTimeInit(Date.now());
-  }
-
   setPayloadResponse(data: any): void{
-    let objPayload: PayloadType = this.configApp.getPayload();
-    this.configApp.setPayload({...objPayload, bodyOut: data})
+    this.configApp.setPayloadResponse(data);
   }
 
   setTimeEnd(dateNow: number): void{
@@ -43,8 +34,8 @@ export class WinstonLoggerService implements NestInterceptor{
       timestamp: common.getTimeZone(new Date()),
       urlApi: this.configApp.getUrlApi(),
       urlBackend: this.configApp.getUrlBackend(),
-      request: this.configApp.getPayload().bodyIn,
-      response: this.configApp.getPayload().bodyOut,
+      request: this.configApp.getPayloadRequest(),
+      response: this.configApp.getPayloadResponse(),
     }
   }
 
@@ -52,11 +43,7 @@ export class WinstonLoggerService implements NestInterceptor{
 
   intercept(host: ExecutionContext, next: CallHandler): Observable<any>{
 
-    const context = host.switchToHttp();
-    const request = context.getRequest<Request>();
-    
     //before
-    this.setCustomHttpState(request);
 
     return next
       .handle()

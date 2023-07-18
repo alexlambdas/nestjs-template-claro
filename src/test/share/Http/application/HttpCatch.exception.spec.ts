@@ -1,6 +1,6 @@
 import { HttpException } from "@nestjs/common";
 import { HttpCatchException } from "../../../../main/share/Http/application/HttpCatch.exception";
-import { HttpCatchExceptionType, HttpExceptionType } from "../../../../main/share/Http/domain/types/Types.types";
+import { HttpCatchExceptionType, HttpExceptionType } from "../../../../main/share/Http/domain/types/CommonTypes.types";
 
 describe('HttpCatchException', () => {
 
