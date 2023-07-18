@@ -12,12 +12,6 @@ export type HttpPropertiesType = {
 }
 
 //
-export type HttpCatchExceptionType = {
-  code: number;
-  description: string;
-}
-
-//
 export type HttpExceptionType = {
   status: number;
   response: string;

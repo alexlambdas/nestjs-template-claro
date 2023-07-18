@@ -1,16 +1,10 @@
 import { HttpPropertiesType } from "../domain/types/CommonTypes.types";
-import { HttpCatchException } from "./HttpCatch.exception";
-import fetch from "cross-fetch";
+//import fetch from "cross-fetch";
 
 //
 async function httpCall<T>(httpProperties: HttpPropertiesType): Promise<T> {
   const { url, props } = httpProperties;
-  try {
-    return (await fetch(url, props)).json();
-  }
-  catch (err) {
-    throw new HttpCatchException({ code: 500, description: String(err) });
-  }
+  return (await fetch(url, props)).json();
 }
 
 function transformObjectToStringQuery<T>(obj: T): string{

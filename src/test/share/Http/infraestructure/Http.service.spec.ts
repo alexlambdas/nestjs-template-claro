@@ -4,7 +4,7 @@ import { HttpService } from "../../../../main/share/Http/infraestructure/Http.se
 import { HttpConfigAppService } from "../../../../main/share/Http/application/HttpConfigApp.service";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
-import Features from "../../../../main/share/Http/application/Features";
+import Features from "../../../../main/share/Http/application/FeaturesApp";
 
 describe('CustomHttpService', () => {
 

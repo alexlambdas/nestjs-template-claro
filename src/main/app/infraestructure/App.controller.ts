@@ -1,18 +1,33 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, HttpException, HttpStatus, InternalServerErrorException, Query, RequestTimeoutException, UseFilters } from "@nestjs/common";
 import { HttpConfigAppService } from "../application/HttpConfigApp.service";
 import { QueryUserDto } from "../domain/dtos/User.dto";
 import { ResponseDto } from "../domain/dtos/Response.dto";
 import { AppService } from "../application/App.service";
+import { HttpFilterException } from "./HttpFilter.exception";
 
 @Controller('/api/path/nestjs/template/users')
-export class AppController{
+@UseFilters(HttpFilterException)
+export class AppController{ 
 
   constructor(
-    private readonly configApp: HttpConfigAppService,
+    private readonly configApp: HttpConfigAppService, 
     private readonly appService: AppService){} 
 
   @Get()
   async get(@Query() bodyIn: QueryUserDto): Promise<ResponseDto>{
-    return await this.appService.getAppService<QueryUserDto,ResponseDto>(bodyIn);
+    
+    try{
+      return await this.appService.getAppService<QueryUserDto,ResponseDto>(bodyIn);
+    }
+    catch(err){
+      if(err === 'timeout'){
+        throw new RequestTimeoutException(err);
+      }
+      else{
+        throw new InternalServerErrorException(err);
+      }
+    }
+    
+    
   }
 }

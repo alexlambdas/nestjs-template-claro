@@ -12,18 +12,6 @@ export type HttpPropertiesType = {
 }
 
 //
-export type HttpCatchExceptionType = {
-  code: number;
-  description: string;
-}
-
-//
-export type HttpExceptionType = {
-  status: number;
-  response: string;
-}
-
-//
 export type LoggerType = {
   applicationName: string;
   methodName: string;
@@ -39,13 +27,6 @@ export type LoggerType = {
   request: any;
   response: any;
   type?: string;
-}
-
-//
-export type errorObjectPropertiesType = {
-  internalFault: any,
-  urlApi: string,
-  fnReduceMessage: (prev: string, current:string) => string,
 }
 
 

@@ -3,7 +3,7 @@ import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
 import { HttpConfigAppService } from "./HttpConfigApp.service";
 import { LoggerType } from "../domain/types/CommonTypes.types";
-import common from "./Features";
+import FeaturesApp from "./FeaturesApp";
 
 @Injectable()
 export class WinstonLoggerService implements NestInterceptor{
@@ -30,7 +30,7 @@ export class WinstonLoggerService implements NestInterceptor{
       layer: "INFRAESTRUCTURE_CONNECTIVITY",
       message: "exitoso",
       processingTime: (this.configApp.getTimeEnd() - this.configApp.getTimeInit())/1000,
-      timestamp: common.getTimeZone(new Date()),
+      timestamp: FeaturesApp.getTimeZone(new Date()),
       urlApi: this.configApp.getUrlApi(),
       urlBackend: this.configApp.getUrlBackend(),
       request: this.configApp.getPayloadRequest(),

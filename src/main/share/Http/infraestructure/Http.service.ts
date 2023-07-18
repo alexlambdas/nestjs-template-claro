@@ -3,7 +3,7 @@ import { HttpRepository } from "../application/Http.repository";
 import { WinstonLoggerService } from "../application/WinstonLogger.service";
 import { UpdateHttpConfigAppService } from "../application/UpdateHttpConfigApp.service";
 import { HttpPropertiesType } from "../domain/types/CommonTypes.types";
-import features from "../application/Features";
+import FeaturesApp from "../application/FeaturesApp"; 
 
 
 @Injectable()
@@ -17,7 +17,7 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(WinstonLoggerService)
   curryGET<T>(httpProperties: HttpPropertiesType):(fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
     
-    const fy = features.curryHttpCall<T>;
+    const fy = FeaturesApp.curryHttpCall<T>;
     return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
       return await fy(httpProperties)(fx); 
     }
@@ -27,7 +27,7 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(WinstonLoggerService)
   curryPost<T>(httpProperties: HttpPropertiesType): (fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
 
-    const fy = features.curryHttpCall<T>;
+    const fy = FeaturesApp.curryHttpCall<T>;
     return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
       return await fy(httpProperties)(fx); 
     }
@@ -37,7 +37,7 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(WinstonLoggerService)
   curryPut<T>(httpProperties: HttpPropertiesType): (fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
 
-    const fy = features.curryHttpCall<T>;
+    const fy = FeaturesApp.curryHttpCall<T>;
     return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
       return await fy(httpProperties)(fx); 
     }
@@ -47,7 +47,7 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(WinstonLoggerService)
   curryDelete<T>(httpProperties: HttpPropertiesType): (fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
 
-    const fy = features.curryHttpCall<T>;
+    const fy = FeaturesApp.curryHttpCall<T>;
     return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
       return await fy(httpProperties)(fx); 
     }
