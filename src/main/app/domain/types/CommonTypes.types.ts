@@ -1,4 +1,25 @@
 //
+export type HttpExceptionType = {
+  exception: {
+    statusCode: number;
+    error: string;
+    message: string;
+    date: string;
+    layer: string;
+    transactionId?: string;
+    urlApi?: string;
+    urlBackend?: string;
+  }
+}
+
+//
+export type ConnExceptionType= {
+  conn: HttpExceptionType | any;
+  description: string;
+  httpExceptionFilter?: any;
+}
+
+//
 export type HttpPropertiesType = {
   url: string;
   timeout: number;
@@ -19,20 +40,6 @@ export type HttpExceptionFilterType = {
 }
 
 //
-export type HttpExceptionType = {
-  exception: {
-    statusCode: number;
-    error: string;
-    message: string;
-    date: string;
-    layer: string;
-    transactionId?: string;
-    urlApi?: string;
-    urlBackend?: string;
-  }
-}
-
-//
 export type LoggerType = {
   applicationName: string;
   methodName: string;
@@ -48,13 +55,6 @@ export type LoggerType = {
   request: any;
   response: any;
   type?: string;
-}
-
-//
-export type errorObjectPropertiesType = {
-  internalFault: any,
-  urlApi: string,
-  fnReduceMessage: (prev: string, current:string) => string,
 }
 
 //

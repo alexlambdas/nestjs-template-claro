@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 
 
 @Injectable()
-export class HttpConfigAppService {
+export class ConfigApp {
 
   //
   private payloadRequest: any;

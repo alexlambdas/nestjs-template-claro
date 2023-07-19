@@ -1,15 +1,16 @@
 import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
-import { HttpConfigAppService } from "./HttpConfigApp.service";
-import { LoggerType } from "../domain/types/CommonTypes.types";
+import { ConfigApp } from "./ConfigApp.service";
+import { ObjLogger } from "../domain/types/TypeAliases";
 import FeaturesApp from "./FeaturesApp";
 
+
 @Injectable()
-export class WinstonLoggerService implements NestInterceptor{
+export class LoggerWinston implements NestInterceptor{
 
   constructor(
-    private readonly configApp: HttpConfigAppService,
+    private readonly configApp: ConfigApp,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger){}
 
   setPayloadResponse(data: any): void{
@@ -20,7 +21,7 @@ export class WinstonLoggerService implements NestInterceptor{
     this.configApp.setTimeEnd(dateNow);
   }
 
-  buildLoggerVO(): LoggerType{
+  buildLoggerVO(): ObjLogger{
     return{
       applicationName: this.configApp.getApplicationName(),
       methodName: this.configApp.getMethodName(),
@@ -51,7 +52,7 @@ export class WinstonLoggerService implements NestInterceptor{
         // after
         this.setTimeEnd(Date.now());
         this.setPayloadResponse(data);
-        const loggerVO: LoggerType = this.buildLoggerVO();
+        const loggerVO: ObjLogger = this.buildLoggerVO();
         const childLogger: any = this.logger.child(loggerVO);
         childLogger.info(loggerVO.message);
       }));

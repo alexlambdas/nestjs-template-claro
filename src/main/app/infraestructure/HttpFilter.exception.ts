@@ -45,11 +45,13 @@ export class HttpFilterException implements ExceptionFilter {
 
   catch(exception: any, host: ArgumentsHost) {
 
+    console.log('HERE HERE ----------------- HttpFilterException');
+    console.log(exception);
     //
     const context = host.switchToHttp();
     const requestExpress = context.getRequest<Request>();
     const responseExpress = context.getResponse<Response>();
-    const exceptionResponse: HttpExceptionFilterType = exception.getResponse();
+    const exceptionResponse: HttpExceptionFilterType = exception['httpExceptionFilter'].getResponse();
 
     /**
      * In this case, "exceptionResponse" object looks like this:
@@ -64,6 +66,9 @@ export class HttpFilterException implements ExceptionFilter {
      * 
      * 
      */
+
+    
+    
 
     const httpException: HttpExceptionType = {
       exception: {

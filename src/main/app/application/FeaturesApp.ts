@@ -1,15 +1,31 @@
 import { BadRequestException, InternalServerErrorException, RequestTimeoutException } from "@nestjs/common";
-import { HttpPropertiesType } from "../domain/types/CommonTypes.types";
-//import fetch from "cross-fetch";
+import { ConnExceptionType, HttpExceptionFilterType, HttpExceptionType, HttpPropertiesType } from "../domain/types/CommonTypes.types";
+import fetch from "cross-fetch";
 
 //
 async function httpCall<T>(httpProperties: HttpPropertiesType): Promise<T> {
-  
-  const { url, props } = httpProperties;
-  const response = (await fetch(url, props));
-  
-  if(response.status >= 200 && response.status <= 299) return response.json();
-  else throw ('CONNECTIVITY;ERROR_HTTP_BACKEND');
+
+  try{
+
+    const { url, props } = httpProperties;
+    const response = await fetch(url, props);
+
+    if(response.status >= 200 && response.status <= 299){
+      return await response.json();
+    }
+    else{
+      throw (await response.json()); 
+    }
+  }
+  catch(err: any){
+
+    const connException: ConnExceptionType = {
+      conn: err,
+      description: String(err),
+    };
+
+    throw (connException);
+  }
 }
 
 function transformObjectToStringQuery<T>(obj: T): string{
@@ -48,22 +64,28 @@ function getTimeZone(date: Date): string{
   return gmt05Date.toISOString().split(".")[0];
 }
 
-function handlerHttpException(err: string): void{
+function handlerHttpException(err: ConnExceptionType | unknown, timeout: number): void{
   
-  switch(err){
+  switch(true){
+    
+    case err['description'] === 'timeout': {
+      //console.log('HERE HERE ----------------- handlerHttpException');
+      const exception = new RequestTimeoutException();
 
-    case 'CONNECTIVITY;ERROR_TIMEOUT': {
-      const message: string = `timeout de ${this.configApp.getTimeOut()/1000} segundos`;
-      throw new RequestTimeoutException(message);
+      const connException: ConnExceptionType = {
+        conn: err['description'],
+        description: `timeout de ${timeout/1000} segundos`,
+        httpExceptionFilter: exception,
+      };
+
+      throw new RequestTimeoutException(connException);
     }
 
-    case 'CONNECTIVITY;ERROR_HTTP_BACKEND':{
-      const message: string = 'error del backend, verificar logs de la aplicacion';
-      throw new BadRequestException(message);
-    }
-
-    default:
+    default:{
+      
       throw new InternalServerErrorException(err);
+    }
+      
   }
 }
 
@@ -73,10 +95,35 @@ function reduceMessage(prev: string, current: string): string {
   else return `${prev} && ${current}`;
 }
 
+//
+function getMsgExceptionFilterDefault(message: string | [string]): string{
+    
+  if(Array.isArray(message)){
+    return message.reduce((prev, current) => reduceMessage(prev,current), '');
+  }
+  else return message;
+}
+
+//
+function buildDefaultHttpException(exceptionResponse: HttpExceptionFilterType): HttpExceptionType{
+  return{
+    exception: {
+      statusCode: exceptionResponse.statusCode,
+      error: exceptionResponse.error,
+      message: getMsgExceptionFilterDefault(exceptionResponse.message),
+      date: getTimeZone(new Date()),
+      layer: 'CONTROLLER',
+    }
+  }
+}
+
+
 export default {
   httpCall,
   transformObjectToStringQuery,
   getTimeZone,
   handlerHttpException,
   reduceMessage,
+  getMsgExceptionFilterDefault,
+  buildDefaultHttpException,
 }

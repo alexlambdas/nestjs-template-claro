@@ -1,8 +1,8 @@
 import { Injectable, UseInterceptors } from "@nestjs/common";
 import { HttpRepository } from "../application/Http.repository";
-import { WinstonLoggerService } from "../application/WinstonLogger.service";
-import { UpdateHttpConfigAppService } from "../application/UpdateHttpConfigApp.service";
-import { HttpPropertiesType } from "../domain/types/CommonTypes.types";
+import { LoggerWinston } from "../application/LoggerWinston.service";
+import { UpdateConfigApp } from "../application/UpdateConfigApp.service";
+import { AsyncResp, Props } from "../domain/types/TypeAliases";
 import FeaturesApp from "../application/FeaturesApp"; 
 
 
@@ -13,43 +13,43 @@ export class HttpService implements HttpRepository{
   constructor(){}
   
   //
-  @UseInterceptors(UpdateHttpConfigAppService)
-  @UseInterceptors(WinstonLoggerService)
-  curryGET<T>(httpProperties: HttpPropertiesType):(fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
+  @UseInterceptors(UpdateConfigApp)
+  @UseInterceptors(LoggerWinston)
+  curryGET<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
     
-    const fy = FeaturesApp.curryHttpCall<T>;
-    return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
-      return await fy(httpProperties)(fx); 
+    const fy = FeaturesApp.curryHttpCall;
+    return async function(fx){
+      return await fy(props)(fx); 
     }
   }
 
-  @UseInterceptors(UpdateHttpConfigAppService)
-  @UseInterceptors(WinstonLoggerService)
-  curryPost<T>(httpProperties: HttpPropertiesType): (fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
+  @UseInterceptors(UpdateConfigApp)
+  @UseInterceptors(LoggerWinston)
+  curryPost<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
 
-    const fy = FeaturesApp.curryHttpCall<T>;
-    return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
-      return await fy(httpProperties)(fx); 
+    const fy = FeaturesApp.curryHttpCall;
+    return async function(fx){
+      return await fy(props)(fx); 
     }
   }
 
-  @UseInterceptors(UpdateHttpConfigAppService)
-  @UseInterceptors(WinstonLoggerService)
-  curryPut<T>(httpProperties: HttpPropertiesType): (fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
+  @UseInterceptors(UpdateConfigApp)
+  @UseInterceptors(LoggerWinston)
+  curryPut<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
 
-    const fy = FeaturesApp.curryHttpCall<T>;
-    return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
-      return await fy(httpProperties)(fx); 
+    const fy = FeaturesApp.curryHttpCall;
+    return async function(fx){
+      return await fy(props)(fx); 
     }
   }
 
-  @UseInterceptors(UpdateHttpConfigAppService)
-  @UseInterceptors(WinstonLoggerService)
-  curryDelete<T>(httpProperties: HttpPropertiesType): (fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>{
+  @UseInterceptors(UpdateConfigApp)
+  @UseInterceptors(LoggerWinston)
+  curryDelete<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
 
-    const fy = FeaturesApp.curryHttpCall<T>;
-    return async function(fx: (_: HttpPropertiesType) => Promise<T>): Promise<T>{
-      return await fy(httpProperties)(fx); 
+    const fy = FeaturesApp.curryHttpCall;
+    return async function(fx){
+      return await fy(props)(fx); 
     }
   }
 }

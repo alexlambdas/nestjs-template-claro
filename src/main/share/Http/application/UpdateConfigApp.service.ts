@@ -1,12 +1,12 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { Observable, tap } from "rxjs";
 import { Request } from 'express';
-import { HttpConfigAppService } from "./HttpConfigApp.service";
+import { ConfigApp } from "./ConfigApp.service";
 
 @Injectable()
-export class UpdateHttpConfigAppService implements NestInterceptor{
+export class UpdateConfigApp implements NestInterceptor{
 
-  constructor(private configApp: HttpConfigAppService) { }
+  constructor(private configApp: ConfigApp) { }
 
   setHttpConfigApp(request: Request): void {
     this.configApp.setTransactionId(String(request.headers['transactionid']));

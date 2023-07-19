@@ -5,6 +5,7 @@ import { ResponseDto } from "../domain/dtos/Response.dto";
 import { AppService } from "../application/App.service";
 import { HttpFilterException } from "./HttpFilter.exception";
 import FeaturesApp from "../application/FeaturesApp";
+import { ConnExceptionType } from "../domain/types/CommonTypes.types";
 
 @Controller('/api/path/nestjs/template/users')
 @UseFilters(HttpFilterException)
@@ -19,8 +20,8 @@ export class AppController{
     try{
       return await this.appService.getApp<QueryUserDto,ResponseDto>(bodyIn);
     }
-    catch(err){ 
-      FeaturesApp.handlerHttpException(err);
+    catch(err: ConnExceptionType | unknown){ 
+      FeaturesApp.handlerHttpException(err, this.configApp.getTimeOut());
     }
   }
 
@@ -31,7 +32,7 @@ export class AppController{
       return await this.appService.postApp<PayloadUserDto,ResponseDto>(bodyIn);
     }
     catch(err){
-      FeaturesApp.handlerHttpException(err);
+      FeaturesApp.handlerHttpException(err, this.configApp.getTimeOut());
     }
   }
 }

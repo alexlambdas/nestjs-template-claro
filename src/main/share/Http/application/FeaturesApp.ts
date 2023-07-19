@@ -1,51 +1,69 @@
-import { HttpPropertiesType } from "../domain/types/CommonTypes.types";
 import fetch from "cross-fetch";
+import { ObjResponse, Props, AsyncResp } from "../domain/types/TypeAliases";
 
 //
-async function httpCall<T>(httpProperties: HttpPropertiesType): Promise<T>{
-  const { url, props } = httpProperties;
-  return (await fetch(url, props)).json();
+async function httpCall<T>(props: Props): AsyncResp<T>{
+  try{
+
+    const {url,properties} = props;
+    const response = await fetch(url,properties);
+
+    const fetchOut: ObjResponse<T> = {
+      ok: response.ok,
+      statusCode: response.status,
+      statusText: response.statusText,
+      bodyOut: await response.json(),
+    };
+
+    return fetchOut;
+
+  }
+  catch(err: any){
+
+    const fetchOut: ObjResponse<T> = {
+      ok: false,
+      statusCode: 500,
+      statusText: 'Internal Server Error',
+      bodyOut: String(err),
+    };
+
+    return fetchOut;
+  }
 }
 
 //
-async function timeOutHttp(miliseconds: number): Promise<string>{
+async function timeOutHttp<T>(ms: number): AsyncResp<T>{
 
   async function timeOutHttp(): Promise<any>{
-    return new Promise(resolve => setTimeout(resolve,miliseconds));
+    return new Promise(resolve => setTimeout(resolve,ms));
   }
 
   await timeOutHttp();
-  return 'CONNECTIVITY;ERROR_TIMEOUT';
+
+  const fetchOut: ObjResponse<T> = {
+    ok: false,
+    statusCode: 500,
+    statusText: 'Internal Server Error',
+    bodyOut: `timeout de ${ms/1000} segundos`,
+  };
+
+  return fetchOut;
 }
 
 //
-function curryHttpCall<T>(props: HttpPropertiesType):((fx: (_: HttpPropertiesType) => Promise<T>) => Promise<T>){
+function curryHttpCall<T>(props: Props):((fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>){
   
   const { timeout } = props;
   const fy = timeOutHttp;
 
-  function handlerOfPromise(value: any): any{
-
-    if(String(value) === 'CONNECTIVITY;ERROR_TIMEOUT'){
-      throw ('CONNECTIVITY;ERROR_TIMEOUT');
-    }
-    else{
-      return value;
-    }
-  }
-
-  function throwCatchException(err: any): void{
-    throw (String(`CONNECTIVITY;${err}`));
-  }
-
   return async function(fx){
     return Promise
         .race([ fy(timeout), fx(props) ])
-        .then(value => handlerOfPromise(value)) 
-        .catch(err => throwCatchException(err))
+        .then(value => value)
   }
 }
 
+//
 function getTimeZone(date: Date): string{
 
   const gmtZuluDate = date;
