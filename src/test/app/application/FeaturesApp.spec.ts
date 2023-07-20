@@ -1,4 +1,4 @@
-import FeaturesApp from "../../../main/app/application/FeaturesApp";
+import FeaturesApp from "../../../main/app/application/Features";
 
 describe('FeaturesApp', () => {
 

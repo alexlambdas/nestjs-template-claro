@@ -3,21 +3,23 @@ import { HttpRepository } from "../application/Http.repository";
 import { LoggerWinston } from "../application/LoggerWinston.service";
 import { UpdateConfigApp } from "../application/UpdateConfigApp.service";
 import { AsyncResp, Props } from "../domain/types/TypeAliases";
-import FeaturesApp from "../application/FeaturesApp"; 
+import { ConfigApp } from "../application/ConfigApp.service";
+import Features from "../application/Features";
 
 
 @Injectable()
 export class HttpService implements HttpRepository{
 
   //
-  constructor(){}
+  constructor(private readonly configApp: ConfigApp){}
   
   //
-  @UseInterceptors(UpdateConfigApp)
+  @UseInterceptors(UpdateConfigApp) 
   @UseInterceptors(LoggerWinston)
   curryGET<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
     
-    const fy = FeaturesApp.curryHttpCall;
+    this.configApp.setPayloadRequest(props.bodyGet);
+    const fy = Features.curryHttpCall;
     return async function(fx){
       return await fy(props)(fx); 
     }
@@ -27,7 +29,8 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(LoggerWinston)
   curryPost<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
 
-    const fy = FeaturesApp.curryHttpCall;
+    this.configApp.setPayloadRequest(props.properties.body);
+    const fy = Features.curryHttpCall;
     return async function(fx){
       return await fy(props)(fx); 
     }
@@ -37,7 +40,8 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(LoggerWinston)
   curryPut<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
 
-    const fy = FeaturesApp.curryHttpCall;
+    this.configApp.setPayloadRequest(props.properties.body);
+    const fy = Features.curryHttpCall;
     return async function(fx){
       return await fy(props)(fx); 
     }
@@ -47,7 +51,8 @@ export class HttpService implements HttpRepository{
   @UseInterceptors(LoggerWinston)
   curryDelete<T>(props: Props):(fx: (_: Props) => AsyncResp<T>) => AsyncResp<T>{
 
-    const fy = FeaturesApp.curryHttpCall;
+    this.configApp.setPayloadRequest(props.bodyDelelete);
+    const fy = Features.curryHttpCall;
     return async function(fx){
       return await fy(props)(fx); 
     }

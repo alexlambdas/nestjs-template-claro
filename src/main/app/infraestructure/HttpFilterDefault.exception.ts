@@ -1,7 +1,7 @@
 import { ArgumentsHost, ExceptionFilter } from "@nestjs/common";
 import { Response } from 'express';
-import { HttpExceptionFilterType } from "../domain/types/CommonTypes.types";
-import FeaturesApp from "../application/FeaturesApp";
+import { HttpExceptionFilter } from "../domain/types/TypeAliases";
+import Features from "../application/Features";
 
 export class HttpFilterDefault implements ExceptionFilter{
 
@@ -9,8 +9,8 @@ export class HttpFilterDefault implements ExceptionFilter{
 
     //
     const context = host.switchToHttp();
-    const responseExpress = context.getResponse<Response>();
-    const exceptionResponse: HttpExceptionFilterType = exception.getResponse();
+    const response = context.getResponse<Response>();
+    const exceptionResponse: HttpExceptionFilter = exception.getResponse();
 
     /**
      * In this case, "exceptionResponse" object looks like this:
@@ -27,8 +27,8 @@ export class HttpFilterDefault implements ExceptionFilter{
      * 
      */
 
-    responseExpress
+    response
       .status(exceptionResponse.statusCode)
-      .json(FeaturesApp.buildDefaultHttpException(exceptionResponse));
+      .json(Features.defaultHttpException(exceptionResponse));
   }
 }

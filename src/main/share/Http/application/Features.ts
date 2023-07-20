@@ -1,5 +1,5 @@
 import fetch from "cross-fetch";
-import { ObjResponse, Props, AsyncResp } from "../domain/types/TypeAliases";
+import { ObjResponse, Props, AsyncResp, ConfigLogger, ObjLogger, LoggerSuccess } from "../domain/types/TypeAliases";
 
 //
 async function httpCall<T>(props: Props): AsyncResp<T>{
@@ -14,7 +14,7 @@ async function httpCall<T>(props: Props): AsyncResp<T>{
       statusText: response.statusText,
       bodyOut: await response.json(),
     };
-
+    
     return fetchOut;
 
   }
@@ -42,8 +42,8 @@ async function timeOutHttp<T>(ms: number): AsyncResp<T>{
 
   const fetchOut: ObjResponse<T> = {
     ok: false,
-    statusCode: 500,
-    statusText: 'Internal Server Error',
+    statusCode: 408,
+    statusText: 'Request Timeout',
     bodyOut: `timeout de ${ms/1000} segundos`,
   };
 
@@ -55,11 +55,13 @@ function curryHttpCall<T>(props: Props):((fx: (_: Props) => AsyncResp<T>) => Asy
   
   const { timeout } = props;
   const fy = timeOutHttp;
-
+  
   return async function(fx){
-    return Promise
+    const response = Promise
         .race([ fy(timeout), fx(props) ])
         .then(value => value)
+
+    return Promise.resolve(response);
   }
 }
 
@@ -79,9 +81,49 @@ function getTimeZone(date: Date): string{
   return gmt05Date.toISOString().split(".")[0];
 }
 
+function objLogger(configLogger: ConfigLogger): ObjLogger{
+
+  const timeInit: number = configLogger.configApp.getTimeInit()/1000;
+  const timeEnd: number = configLogger.configApp.getTimeEnd();
+
+  return{
+    applicationName: configLogger.configApp.getApplicationName(),
+    methodName: configLogger.configApp.getMethodName(),
+    verb: configLogger.configApp.getVerb(),
+    transactionId: configLogger.configApp.getTransactionId(),
+    level: 'info',
+    layer: configLogger.isConnectivity ? 'connectivity' : 'controller',
+    message: configLogger.isSuccess ? 'exitoso' : 'error',
+    processingTime: timeEnd-timeInit,
+    timestamp: getTimeZone(new Date()),
+    urlApi: configLogger.configApp.getUrlApi(),
+    urlBackend: configLogger.configApp.getUrlBackend(),
+    request: configLogger.configApp.getPayloadRequest(),
+    response: configLogger.configApp.getPayloadResponse(),
+  }
+}
+
+function loggerSuccess(props: LoggerSuccess): void{
+
+  const configLogger: ConfigLogger = {
+    configApp: props.configApp,
+    isConnectivity: props.isConnectivity,
+    isSuccess: props.isSuccess,
+  };
+
+  props.configApp.setTimeEnd(Date.now());
+  props.configApp.setPayloadResponse(props.bodyOut);
+
+  const loggerVO: ObjLogger = objLogger(configLogger);
+  const childLogger: any = props.logger.child(loggerVO);
+  childLogger.info(loggerVO.message);
+}
+
 export default {
   httpCall,
   timeOut: timeOutHttp,
   curryHttpCall,
   getTimeZone,
+  objLogger,
+  loggerSuccess,
 }

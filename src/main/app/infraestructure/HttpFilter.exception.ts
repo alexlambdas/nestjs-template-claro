@@ -1,8 +1,9 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from "@nestjs/common";
 import { Request, Response } from "express";
-import { HttpConfigAppService } from "../application/HttpConfigApp.service";
-import { HttpExceptionFilterType, HttpExceptionType } from "../domain/types/CommonTypes.types";
-import FeaturesApp from "../application/FeaturesApp";
+import { ConfigApp } from "../application/ConfigApp.service";
+import { HttpExceptionFilter, Fault, LoggerException } from "../domain/types/TypeAliases";
+import Features from "../application/Features";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
 
 /**
@@ -17,41 +18,19 @@ import FeaturesApp from "../application/FeaturesApp";
 @Catch(HttpException)
 export class HttpFilterException implements ExceptionFilter {
 
-  constructor(private readonly configService: HttpConfigAppService){}
-
-  reduceMsg(message: string | [string]): string{
-
-    if(Array.isArray(message)){
-      return message.reduce((prev, current) => FeaturesApp.reduceMessage(prev,current), '');
-    }
-
-    if(message.split(';').length > 1){
-      return message.split(';')[1];
-    }
-
-    return message;
-  }
-
-  setLayer(message: string): string {
-    let msg: string = 'CONTROLLER';
-
-    if(message.split(';').length > 1){
-      return message.split(';')[0];
-    }
-
-    return msg;
-  }
+  constructor(
+    private readonly configApp: ConfigApp,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger){}
 
 
   catch(exception: any, host: ArgumentsHost) {
-
-    console.log('HERE HERE ----------------- HttpFilterException');
-    console.log(exception);
+    
     //
     const context = host.switchToHttp();
     const requestExpress = context.getRequest<Request>();
-    const responseExpress = context.getResponse<Response>();
-    const exceptionResponse: HttpExceptionFilterType = exception['httpExceptionFilter'].getResponse();
+    const response = context.getResponse<Response>();
+    const exceptionResponse: HttpExceptionFilter = exception.getResponse();
+    const objResp = this.configApp.getPayloadResponse();
 
     /**
      * In this case, "exceptionResponse" object looks like this:
@@ -66,26 +45,104 @@ export class HttpFilterException implements ExceptionFilter {
      * 
      * 
      */
+    //console.log(objResp);
 
-    
-    
+    switch(true){
 
-    const httpException: HttpExceptionType = {
-      exception: {
-        statusCode: exceptionResponse.statusCode,
-        error: exceptionResponse.error,
-        message: this.reduceMsg(exceptionResponse.message),
-        date: FeaturesApp.getTimeZone(new Date()),
-        layer: this.setLayer(String(exceptionResponse.message)),
-        transactionId: this.configService.getTransactionId(),
-        urlApi: this.configService.getUrlApi(),
-        urlBackend: this.configService.getUrlBackend(), 
+      case typeof objResp.bodyOut === 'string':{ 
+
+        const objException: Fault = {
+          fault: {
+            statusCode: exceptionResponse.statusCode,
+            error: exceptionResponse.error,
+            message: String(objResp.bodyOut),
+            date: Features.getTimeZone(new Date()),
+            layer: 'connectivity',
+            transactionId: this.configApp.getTransactionId(),
+            urlApi: this.configApp.getUrlApi(),
+            urlBackend: this.configApp.getUrlBackend(), 
+            responseBackend: objResp.bodyOut,
+          }
+        };
+
+        const loggerProps: LoggerException = {
+          configApp: this.configApp,
+          fault: objException,
+          isSuccess: false,
+          isConnectivity: true,
+          logger: this.logger,
+        };
+
+        Features.loggerException(loggerProps);        
+    
+        return response
+          .status(exceptionResponse.statusCode)
+          .json(objException);
+      }
+
+      case typeof objResp.bodyOut === 'object' && typeof objResp.bodyOut.fault !== undefined:{
+
+        const message = typeof objResp.bodyOut.fault !== undefined ? objResp.bodyOut.fault.message : exceptionResponse.error;
+
+        const objException: Fault = {
+          fault: {
+            statusCode: exceptionResponse.statusCode,
+            error: exceptionResponse.error,
+            message: message,
+            date: Features.getTimeZone(new Date()),
+            layer: 'connectivity',
+            transactionId: this.configApp.getTransactionId(),
+            urlApi: this.configApp.getUrlApi(),
+            urlBackend: this.configApp.getUrlBackend(), 
+            responseBackend: objResp.bodyOut,
+          }
+        };
+
+        const loggerProps: LoggerException = {
+          configApp: this.configApp,
+          fault: objException,
+          isSuccess: false,
+          isConnectivity: true,
+          logger: this.logger,
+        };
+
+        Features.loggerException(loggerProps);
+  
+        return response
+          .status(exceptionResponse.statusCode)
+          .json(objException);
+      }
+
+      default:{
+        
+        const objException: Fault = {
+          fault: {
+            statusCode: exceptionResponse.statusCode,
+            error: exceptionResponse.error,
+            message: Features.reduceMsg(exceptionResponse.message),
+            date: Features.getTimeZone(new Date()),
+            layer: 'controller',
+            transactionId: this.configApp.getTransactionId(),
+            urlApi: this.configApp.getUrlApi(),
+            urlBackend: this.configApp.getUrlBackend(), 
+            responseBackend: 'does not apply',
+          }
+        };
+
+        const loggerProps: LoggerException = {
+          configApp: this.configApp,
+          fault: objException,
+          isSuccess: false,
+          isConnectivity: false,
+          logger: this.logger,
+        };
+
+        Features.loggerException(loggerProps);
+    
+        return response
+          .status(exceptionResponse.statusCode)
+          .json(objException);
       }
     }
-
-    responseExpress
-      .status(exceptionResponse.statusCode)
-      .json(httpException);
   }
-
 }

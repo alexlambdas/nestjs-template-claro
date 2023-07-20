@@ -21,18 +21,19 @@ export type Fault = {
     message: string;
     date: string;
     layer: string;
-    transactionId: string;
-    urlApi: string;
-    urlBackend: string;
+    transactionId?: string;
+    urlApi?: string;
+    urlBackend?: string;
+    responseBackend: string | any;
   }
-}
+};
 
-export type ObjResponse<T> = {
+export type ObjResponse<T>= {
   ok: boolean;
   statusCode: number;
   statusText: string;
   bodyOut: T | Fault | string | any;
-}
+};
 
 export type ObjLogger = {
   applicationName: string;
@@ -49,7 +50,7 @@ export type ObjLogger = {
   request: any;
   response: any;
   type?: string;
-}
+};
 
 export type ConfigLogger = {
   configApp: ConfigApp,
@@ -57,12 +58,18 @@ export type ConfigLogger = {
   isConnectivity: boolean,
 }
 
-export type LoggerSuccess = {
+export type LoggerException = {
   configApp: ConfigApp,
-  bodyOut: any,
+  fault: Fault,
   isSuccess: boolean,
   isConnectivity: boolean,
   logger: any,
 }
+
+export type HttpExceptionFilter = {
+  message: string | [string];
+  error: string;
+  statusCode: number;
+};
 
 export type AsyncResp<T> = Promise<ObjResponse<T>>;

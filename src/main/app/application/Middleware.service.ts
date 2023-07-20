@@ -1,20 +1,20 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuid } from "uuid";
-import { HttpConfigAppService } from "./HttpConfigApp.service";
+import { ConfigApp } from "./ConfigApp.service";
 
 /**
  * 
- * @author Fábrica Digital
+ * @author alexlambdas
  * 
  * @description
  * The main goal of this class is build or catch the "transacionid" http/header.
  * 
  */
 @Injectable()
-export class MiddlewareService implements NestMiddleware {
+export class Middleware implements NestMiddleware {
 
-  constructor(private readonly configApp: HttpConfigAppService){}
+  constructor(private readonly configApp: ConfigApp){}
 
   //
   private transactionid: string;
@@ -28,12 +28,16 @@ export class MiddlewareService implements NestMiddleware {
 
   setPayloadRequest(request: Request): void{
 
-    if(request.method === 'GET' && Object.entries(request.query).length > 0){
+    if(request.method === this.configApp.getMethodGET() && Object.entries(request.query).length > 0){
       this.configApp.setPayloadRequest(request.query);
     }
 
-    if(request.method === 'GET' && Object.entries(request.params).length > 0){
+    if(request.method === this.configApp.getMethodGET() && Object.entries(request.params).length > 0){
       this.configApp.setPayloadRequest(request.params);
+    }
+
+    if(request.method === this.configApp.getMethodPOST()){
+      this.configApp.setPayloadRequest(request.body);
     }
   }
 

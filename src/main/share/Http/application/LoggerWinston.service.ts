@@ -1,60 +1,39 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from "@nestjs/common";
+import { CallHandler, ExecutionContext, Inject, Injectable, InternalServerErrorException, NestInterceptor } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
 import { ConfigApp } from "./ConfigApp.service";
-import { ObjLogger } from "../domain/types/TypeAliases";
-import FeaturesApp from "./FeaturesApp";
+import { LoggerSuccess } from "../domain/types/TypeAliases";
+import Features from "./Features";
 
 
 @Injectable()
 export class LoggerWinston implements NestInterceptor{
+  reflector: any;
 
   constructor(
     private readonly configApp: ConfigApp,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger){}
 
-  setPayloadResponse(data: any): void{
-    this.configApp.setPayloadResponse(data);
-  }
-
-  setTimeEnd(dateNow: number): void{
-    this.configApp.setTimeEnd(dateNow);
-  }
-
-  buildLoggerVO(): ObjLogger{
-    return{
-      applicationName: this.configApp.getApplicationName(),
-      methodName: this.configApp.getMethodName(),
-      verb: this.configApp.getVerb(),
-      transactionId: this.configApp.getTransactionId(),
-      level: "info",
-      layer: "INFRAESTRUCTURE_CONNECTIVITY",
-      message: "exitoso",
-      processingTime: (this.configApp.getTimeEnd() - this.configApp.getTimeInit())/1000,
-      timestamp: FeaturesApp.getTimeZone(new Date()),
-      urlApi: this.configApp.getUrlApi(),
-      urlBackend: this.configApp.getUrlBackend(),
-      request: this.configApp.getPayloadRequest(),
-      response: this.configApp.getPayloadResponse(),
-    }
-  }
-
-  
-
-  intercept(host: ExecutionContext, next: CallHandler): Observable<any>{
+  intercept(host: ExecutionContext, next: CallHandler<Observable<any>>): Observable<any>{
 
     //before
-
+    
     return next
       .handle()
-      .pipe(tap((data) => {
+      .pipe(
+        tap((data) => {
+          // after
 
-        // after
-        this.setTimeEnd(Date.now());
-        this.setPayloadResponse(data);
-        const loggerVO: ObjLogger = this.buildLoggerVO();
-        const childLogger: any = this.logger.child(loggerVO);
-        childLogger.info(loggerVO.message);
-      }));
+          const loggerProps: LoggerSuccess = {
+            configApp: this.configApp,
+            bodyOut: data,
+            isSuccess: true,
+            isConnectivity: true,
+            logger: this.logger,
+          };
+
+          Features.loggerSuccess(loggerProps);
+        }),
+      );
   }
 }
