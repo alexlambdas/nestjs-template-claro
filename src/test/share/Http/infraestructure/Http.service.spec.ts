@@ -1,16 +1,16 @@
 import { Test } from "@nestjs/testing";
-import { Props } from "../../../../main/share/Http/domain/types/TypeAliases";
-import { HttpService } from "../../../../main/share/Http/infraestructure/Http.service";
-import { ConfigApp } from "../../../../main/share/Http/application/ConfigApp.service";
+import { PropsType } from "../../../../main/share/Http/domain/types/Common.type";
+import { HttpService } from "../../../../main/share/Http/infraestructure/adapter/Http.service";
+import { ConfigAppService } from "../../../../main/share/Http/application/ConfigApp.service";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
-import Features from "../../../../main/share/Http/application/Features";
+import Features from "../../../../main/share/Http/application/Utilities.service.";
 
 describe('CustomHttpService', () => {
 
   //
   let http: HttpService;
-  let configApp: ConfigApp;
+  let configApp: ConfigAppService;
   let numberOfTest: number = 0;
 
   //
@@ -19,7 +19,7 @@ describe('CustomHttpService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         HttpService,
-        ConfigApp,
+        ConfigAppService,
         ConfigService,
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -29,13 +29,13 @@ describe('CustomHttpService', () => {
     }).compile();
 
     http = moduleRef.get<HttpService>(HttpService);
-    configApp = moduleRef.get<ConfigApp>(ConfigApp);
+    configApp = moduleRef.get<ConfigAppService>(ConfigAppService);
   })
   
   //
   it(`test #${++numberOfTest} :: function fetchData :: normal case`, async () => {
 
-    const properties: Props = {
+    const properties: PropsType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: 5000,
       properties: {
@@ -60,7 +60,7 @@ describe('CustomHttpService', () => {
       "completed": false
     };
 
-    async function fetchCustomMock(props: Props): Promise<any>{
+    async function fetchCustomMock(props: PropsType): Promise<any>{
       return responseUser;
     };
 
@@ -73,7 +73,7 @@ describe('CustomHttpService', () => {
   //
   it(`test #${++numberOfTest} :: function fetchData :: error case`, async () => {
 
-    const httpProperties: Props = {
+    const httpProperties: PropsType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: Number.MIN_VALUE,
       properties: {
@@ -98,7 +98,7 @@ describe('CustomHttpService', () => {
       "completed": false
     };
 
-    const customFetchMock = async function(httpProperties: Props): Promise<any>{
+    const customFetchMock = async function(httpProperties: PropsType): Promise<any>{
       return new Promise((resolve,_) => setTimeout(() => resolve(responseUser),10));
     };
     
@@ -109,7 +109,7 @@ describe('CustomHttpService', () => {
   //
   it(`test #${++numberOfTest} :: function get :: normal case`, async () => {
 
-    const properties: Props = {
+    const properties: PropsType = {
       url: 'https://jsonplaceholder.typicode.com/todos/1',
       timeout: 5000,
       properties: {
@@ -134,11 +134,11 @@ describe('CustomHttpService', () => {
       "completed": false
     };
 
-    async function fetchCustomMock(props: Props): Promise<any>{
+    async function fetchCustomMock(props: PropsType): Promise<any>{
       return responseUser;
     };
 
-    const response: User = await (http.curryGET<User>(properties))(fetchCustomMock);
+    const response: User = await (http.GET<User>(properties))(fetchCustomMock);
     
     expect(response).toEqual(responseUser);
 

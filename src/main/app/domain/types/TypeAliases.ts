@@ -1,6 +1,6 @@
-import { ConfigApp } from "../../application/ConfigApp.service";
+import { ConfigAppService } from "../../application/ConfigApp.service";
 
-export type Props = {
+export type PropsType = {
   url: string;
   timeout: number;
   properties: {
@@ -14,28 +14,28 @@ export type Props = {
   bodyDelelete?: any;
 };
 
-export type Fault = {
+export type FaultType = {
   fault: {
     statusCode: number;
     error: string;
-    message: string;
+    message: string | undefined;
     date: string;
     layer: string;
     transactionId?: string;
     urlApi?: string;
     urlBackend?: string;
-    responseBackend: string | any;
+    backendResponse: string | any;
   }
 };
 
-export type ObjResponse<T>= {
+export type ResponseType<T>= {
   ok: boolean;
   statusCode: number;
   statusText: string;
-  bodyOut: T | Fault | string | any;
+  data: T[] | T | string | any;
 };
 
-export type ObjLogger = {
+export type LoggerType = {
   applicationName: string;
   methodName: string;
   verb: string;
@@ -50,26 +50,31 @@ export type ObjLogger = {
   request: any;
   response: any;
   type?: string;
-};
+}; 
 
-export type ConfigLogger = {
-  configApp: ConfigApp,
+export type ConfigLoggerType = {
+  configApp: ConfigAppService,
   isSuccess: boolean,
   isConnectivity: boolean,
 }
 
-export type LoggerException = {
-  configApp: ConfigApp,
-  fault: Fault,
+export type ConfigLoggerExceptionType = {
+  configApp: ConfigAppService,
+  fault: FaultType,
   isSuccess: boolean,
   isConnectivity: boolean,
   logger: any,
 }
 
-export type HttpExceptionFilter = {
+export type HttpExceptionFilterType = {
   message: string | [string];
   error: string;
   statusCode: number;
 };
 
-export type AsyncResp<T> = Promise<ObjResponse<T>>;
+export type AsyncResponse<T> = Promise<ResponseType<T>>;
+
+export type AjvErrorType = {
+  ok: boolean;
+  message?: string;
+}

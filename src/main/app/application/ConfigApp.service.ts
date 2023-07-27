@@ -1,8 +1,10 @@
 import { ConfigService } from "@nestjs/config";
 import { Injectable } from "@nestjs/common";
+import { AjvErrorType } from "../domain/types/TypeAliases";
+import ConfigAppDefault from "./ConfigApp.default";
 
 @Injectable()
-export class ConfigApp {
+export class ConfigAppService {
 
   //
   private payloadRequest: any;
@@ -12,29 +14,41 @@ export class ConfigApp {
   private urlApi: string;
   private timeInitController: number;
   private timeEndController: number;
+  private ajvError: AjvErrorType;
   
   
   //
   private applicationName: string;
   private methodName: string;
   private urlBackend: string;
-  private timeOut: number;
-  private methodGET: string;
-  private methodPOST: string;
-  private methodPUT: string;
-  private methodDELETE: string;
+  private timeOutHttpConnection: number;
+  private backendAppName: string;
 
 
   constructor(private readonly configService: ConfigService) {
 
-    this.applicationName = this.configService.get<string>('NODE_ENV_APPLICATION_NAME');
-    this.methodName = this.configService.get<string>('NODE_ENV_METHOD_NAME');
-    this.urlBackend = this.configService.get<string>('NODE_ENV_HTTP_URL_BACK_END');
-    this.timeOut = parseInt(this.configService.get<string>('NODE_ENV_TIMEOUT_HTTP_CONNECTION'));
-    this.methodGET = 'GET';
-    this.methodPOST = 'POST';
-    this.methodPUT = 'PUT';
-    this.methodDELETE = 'DELETE';
+    let env: string | undefined;
+
+    env = this.configService.get<string>('ENV_APP_NAME');
+    if(typeof env === 'string') this.applicationName = env;
+    else this.applicationName = ConfigAppDefault.ENV_APP_NAME;
+
+    env = this.configService.get<string>('ENV_METHOD_NAME');
+    if(typeof env === 'string') this.methodName = env;
+    else this.methodName = ConfigAppDefault.ENV_METHOD_NAME;
+
+    env = this.configService.get<string>('ENV_TIMEOUT_HTTP');
+    if(typeof env === 'string') this.timeOutHttpConnection = parseInt(env);
+    else this.timeOutHttpConnection = parseInt(ConfigAppDefault.ENV_TIMEOUT_HTTP);
+    
+    env = this.configService.get<string>('ENV_BACKEND_APP_NAME');
+    if(typeof env === 'string') this.backendAppName = env;
+    else this.backendAppName = ConfigAppDefault.ENV_BACKEND_APP_NAME;
+
+    env = this.configService.get<string>('ENV_URL_BACKEND');
+    if(typeof env === 'string') this.urlBackend = env;
+    else this.urlBackend = ConfigAppDefault.ENV_URL_BACKEND;
+
   }
 
   /**
@@ -45,8 +59,9 @@ export class ConfigApp {
    */
 
   setPayloadRequest = (payloadRequest: any): void => this.payloadRequest = payloadRequest;
-  setPayloadResponse = (payloadResponse: any): void => this.payloadResponse = payloadResponse;
   getPayloadRequest = (): any => this.payloadRequest;
+
+  setPayloadResponse = (payloadResponse: any): void => this.payloadResponse = payloadResponse;
   getPayloadResponse = (): any => this.payloadResponse;
 
   setTransactionId = (transactionId: string) => this.transactionId = transactionId;
@@ -64,6 +79,9 @@ export class ConfigApp {
   setTimeEnd = (timeEndConnectivity: number) => this.timeEndController = timeEndConnectivity;
   getTimeEnd = (): number => this.timeEndController;
 
+  setAjvError = (ajvError: AjvErrorType) => this.ajvError = ajvError;
+  getAjvError = (): AjvErrorType => this.ajvError;
+
   /**
    * 
    * @description
@@ -74,11 +92,9 @@ export class ConfigApp {
   getApplicationName = (): string => this.applicationName;
   getMethodName = (): string => this.methodName;
   getUrlBackend = (): string => this.urlBackend;
-  getTimeOut = (): number => this.timeOut;
-  getMethodGET = (): string => this.methodGET;
-  getMethodPOST = (): string => this.methodPOST;
-  getMethodPUT = (): string => this.methodPUT;
-  getMethodDELETE = (): string => this.methodDELETE;
+  getTimeOut = (): number => this.timeOutHttpConnection;
+  getBackendAppName = (): string => this.backendAppName;
+  
 
   /**
    * 
@@ -87,8 +103,9 @@ export class ConfigApp {
    * 
    */
 
-  getGeneticErrorMessage = (): string => "error";
-  getHttpErrorMessage = (): string => "error http";
-  getSystemErrorHandlerMessage = (): string => "openshift";
+  getMethodGET = (): string => 'GET';
+  getMethodPOST = (): string => 'POST';
+  getMethodPUT = (): string => 'PUT';
+  getMethodDELETE = (): string => 'DELETE';
 
 }

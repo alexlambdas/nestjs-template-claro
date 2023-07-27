@@ -1,6 +1,6 @@
 import { ArgumentsHost, ExceptionFilter } from "@nestjs/common";
 import { Response } from 'express';
-import { HttpExceptionFilter } from "../domain/types/TypeAliases";
+import { HttpExceptionFilterType } from "../domain/types/TypeAliases";
 import Features from "../application/Features";
 
 export class HttpFilterDefault implements ExceptionFilter{
@@ -10,7 +10,7 @@ export class HttpFilterDefault implements ExceptionFilter{
     //
     const context = host.switchToHttp();
     const response = context.getResponse<Response>();
-    const exceptionResponse: HttpExceptionFilter = exception.getResponse();
+    const exceptionResponse: HttpExceptionFilterType = exception.getResponse();
 
     /**
      * In this case, "exceptionResponse" object looks like this:

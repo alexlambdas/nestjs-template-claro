@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsNotEmpty } from "class-validator";
 
 /**
  * 
@@ -6,56 +7,43 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
  * data transfer object (DTO) in Domain Layer
  * 
  */
-class DetailExceptionDto {
+class DetailFaultDto {
 
   @ApiProperty()
-  systemErrorHandler: string;
+  @IsNotEmpty()
+  statusCode: number;
 
   @ApiProperty()
-  originSystemError: string;
+  @IsNotEmpty()
+  error: string;
 
   @ApiProperty()
-  originSystemErrorCode: string;
-
-  @ApiProperty()
-  originSystemErrorMessage: string;
-
-  @ApiProperty()
-  originSystemErrorDescription: any;
-}
-
-/**
- * 
- * @descirption
- * data transfer object (DTO) in Domain Layer
- * 
- */
-class FaultExceptionDto {
-
-  @ApiPropertyOptional()
-  transactionId?: string;
-
-  @ApiProperty()
-  timeStamp: string;
-
-  @ApiProperty()
-  httpStatusCode: number;
-
-  @ApiProperty()
+  @IsNotEmpty()
   message: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  date: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   layer: string;
 
   @ApiProperty()
-  urlApi: string;
+  @IsNotEmpty()
+  transactionId?: string;
 
   @ApiProperty()
-  urlBackend: string;
+  @IsNotEmpty()
+  urlApi?: string;
 
-  @ApiProperty({ type: DetailExceptionDto })
-  detailException: DetailExceptionDto;
+  @ApiProperty()
+  @IsNotEmpty()
+  urlBackend?: string;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  backendResponse: string | any;
 }
 
 
@@ -67,8 +55,8 @@ class FaultExceptionDto {
  */
 export class FaultDto {
 
-  @ApiProperty({ type: FaultExceptionDto })
-  fault: FaultExceptionDto;
+  @ApiProperty({ type: DetailFaultDto })
+  fault: DetailFaultDto;
 }
 
 

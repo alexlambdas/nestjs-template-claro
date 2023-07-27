@@ -1,17 +1,16 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, InternalServerErrorException, NestInterceptor } from "@nestjs/common";
+import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
-import { ConfigApp } from "./ConfigApp.service";
-import { LoggerSuccess } from "../domain/types/TypeAliases";
-import Features from "./Features";
+import { ConfigAppService } from "./ConfigApp.service";
+import { LoggerSuccessType } from "../domain/types/Common.type";
+import Util from "./Utilities.service.";
 
 
 @Injectable()
-export class LoggerWinston implements NestInterceptor{
-  reflector: any;
+export class LoggerWinstonService implements NestInterceptor{
 
   constructor(
-    private readonly configApp: ConfigApp,
+    private readonly configApp: ConfigAppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger){}
 
   intercept(host: ExecutionContext, next: CallHandler<Observable<any>>): Observable<any>{
@@ -24,15 +23,13 @@ export class LoggerWinston implements NestInterceptor{
         tap((data) => {
           // after
 
-          const loggerProps: LoggerSuccess = {
+          const props: LoggerSuccessType = {
             configApp: this.configApp,
             bodyOut: data,
-            isSuccess: true,
-            isConnectivity: true,
             logger: this.logger,
           };
 
-          Features.loggerSuccess(loggerProps);
+          Util.loggerSuccess(props);
         }),
       );
   }

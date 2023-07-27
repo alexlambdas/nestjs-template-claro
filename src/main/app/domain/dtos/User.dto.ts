@@ -1,6 +1,92 @@
-import { IsDefined, IsNotEmpty, IsOptional } from "class-validator";
+import { IsDefined, IsNotEmpty } from "class-validator";
 
-export class PayloadUserDto{
+/**
+ * 
+ * @descirption
+ * data transfer object (DTO) in Domain Layer
+ * 
+ */
+export class QueryUserDto{
+
+  @IsDefined()
+  @IsNotEmpty()
+  id: number;
+}
+
+/**
+ * 
+ * @descirption
+ * data transfer object (DTO) in Domain Layer
+ * 
+ */
+class GeoDto{
+
+  @IsDefined()
+  @IsNotEmpty()
+  lat: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  lng: string;
+}
+
+/**
+ * 
+ * @descirption
+ * data transfer object (DTO) in Domain Layer
+ * 
+ */
+class AddressDto{
+
+  @IsDefined()
+  @IsNotEmpty()
+  street: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  suite: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  city: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  zipcode: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  geo: GeoDto;
+}
+
+/**
+ * 
+ * @descirption
+ * data transfer object (DTO) in Domain Layer
+ * 
+ */
+class CompanyDto{
+
+  @IsDefined()
+  @IsNotEmpty()
+  name: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  catchPhrase: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  bs: string;
+}
+
+/**
+ * 
+ * @descirption
+ * data transfer object (DTO) in Domain Layer
+ * 
+ */
+export class UserDto{
 
     @IsDefined()
     @IsNotEmpty()
@@ -8,104 +94,30 @@ export class PayloadUserDto{
 
     @IsDefined()
     @IsNotEmpty()
-    first_name: string;
+    name: string;
 
     @IsDefined()
     @IsNotEmpty()
-    last_name: string;
+    username: string;
 
     @IsDefined()
     @IsNotEmpty()
-    gender: string;
+    email: string;
 
     @IsDefined()
     @IsNotEmpty()
-    language: string;
+    address: AddressDto;
 
     @IsDefined()
     @IsNotEmpty()
-    age: number;
+    phone: string;
 
     @IsDefined()
     @IsNotEmpty()
-    country: string;
+    website: string;
 
     @IsDefined()
     @IsNotEmpty()
-    city: string;
-
-    @IsDefined()
-    @IsNotEmpty()
-    car_make: string;
-
-    @IsDefined()
-    @IsNotEmpty()
-    car_model_year: number;
-
-    @IsDefined()
-    @IsNotEmpty()
-    currency_code: string;
-
-    @IsDefined()
-    @IsNotEmpty()
-    favorite_color: string;
-
-    @IsDefined()
-    @IsNotEmpty()
-    credit_card_type: string;
+    company: CompanyDto;
 }
 
-export class QueryUserDto{
-
-  @IsOptional()
-  @IsNotEmpty()
-  id: number;
-
-  @IsOptional()
-  @IsNotEmpty()
-  first_name: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  last_name: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  gender: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  language: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  age: number;
-
-  @IsOptional()
-  @IsNotEmpty()
-  country: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  city: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  car_make: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  car_model_year: number;
-
-  @IsOptional()
-  @IsNotEmpty()
-  currency_code: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  favorite_color: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  credit_card_type: string;
-}

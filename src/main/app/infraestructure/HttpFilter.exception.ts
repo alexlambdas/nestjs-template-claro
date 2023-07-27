@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from "@nestjs/common";
 import { Request, Response } from "express";
-import { ConfigApp } from "../application/ConfigApp.service";
-import { HttpExceptionFilter, Fault, LoggerException } from "../domain/types/TypeAliases";
+import { ConfigAppService } from "../application/ConfigApp.service";
+import { HttpExceptionFilterType, FaultType, ConfigLoggerExceptionType, ResponseType } from "../domain/types/TypeAliases";
 import Features from "../application/Features";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
@@ -19,7 +19,7 @@ import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 export class HttpFilterException implements ExceptionFilter {
 
   constructor(
-    private readonly configApp: ConfigApp,
+    private readonly configApp: ConfigAppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger){}
 
 
@@ -29,8 +29,8 @@ export class HttpFilterException implements ExceptionFilter {
     const context = host.switchToHttp();
     const requestExpress = context.getRequest<Request>();
     const response = context.getResponse<Response>();
-    const exceptionResponse: HttpExceptionFilter = exception.getResponse();
-    const objResp = this.configApp.getPayloadResponse();
+    const exceptionResponse: HttpExceptionFilterType = exception.getResponse();
+    const responseType: ResponseType<FaultType | string> = this.configApp.getPayloadResponse();
 
     /**
      * In this case, "exceptionResponse" object looks like this:
@@ -42,32 +42,29 @@ export class HttpFilterException implements ExceptionFilter {
      * }
      * 
      * This means that "faultResponse" object was built by "ValidationPipe" in any controller class.
-     * 
-     * 
      */
-    //console.log(objResp);
 
     switch(true){
+      
+      case !responseType.ok:{
 
-      case typeof objResp.bodyOut === 'string':{ 
-
-        const objException: Fault = {
+        const faultType: FaultType = {
           fault: {
-            statusCode: exceptionResponse.statusCode,
-            error: exceptionResponse.error,
-            message: String(objResp.bodyOut),
+            statusCode: responseType.statusCode,
+            error: responseType.statusText,
+            message: responseType.statusText,
             date: Features.getTimeZone(new Date()),
-            layer: 'connectivity',
+            layer: 'Connectivity',
             transactionId: this.configApp.getTransactionId(),
             urlApi: this.configApp.getUrlApi(),
             urlBackend: this.configApp.getUrlBackend(), 
-            responseBackend: objResp.bodyOut,
+            backendResponse: responseType.data,
           }
         };
 
-        const loggerProps: LoggerException = {
+        const loggerProps: ConfigLoggerExceptionType = {
           configApp: this.configApp,
-          fault: objException,
+          fault: faultType,
           isSuccess: false,
           isConnectivity: true,
           logger: this.logger,
@@ -76,72 +73,47 @@ export class HttpFilterException implements ExceptionFilter {
         Features.loggerException(loggerProps);        
     
         return response
-          .status(exceptionResponse.statusCode)
-          .json(objException);
+          .status(faultType.fault.statusCode)
+          .json(faultType);
+
       }
 
-      case typeof objResp.bodyOut === 'object' && typeof objResp.bodyOut.fault !== undefined:{
+      case !this.configApp.getAjvError().ok:{ 
 
-        const message = typeof objResp.bodyOut.fault !== undefined ? objResp.bodyOut.fault.message : exceptionResponse.error;
-
-        const objException: Fault = {
+        const faultType: FaultType = {
           fault: {
             statusCode: exceptionResponse.statusCode,
-            error: exceptionResponse.error,
-            message: message,
+            error: Features.reduceMsg(exceptionResponse.message),
+            message: 'Backend response is not of the expected type' + ' && ' + this.configApp.getAjvError().message,
             date: Features.getTimeZone(new Date()),
-            layer: 'connectivity',
+            layer: 'Connectivity',
             transactionId: this.configApp.getTransactionId(),
             urlApi: this.configApp.getUrlApi(),
             urlBackend: this.configApp.getUrlBackend(), 
-            responseBackend: objResp.bodyOut,
+            backendResponse: responseType.data,
           }
         };
 
-        const loggerProps: LoggerException = {
+        const loggerProps: ConfigLoggerExceptionType = {
           configApp: this.configApp,
-          fault: objException,
+          fault: faultType,
           isSuccess: false,
           isConnectivity: true,
           logger: this.logger,
         };
 
-        Features.loggerException(loggerProps);
-  
+        Features.loggerException(loggerProps);        
+    
         return response
-          .status(exceptionResponse.statusCode)
-          .json(objException);
+          .status(faultType.fault.statusCode)
+          .json(faultType);
       }
 
-      default:{
-        
-        const objException: Fault = {
-          fault: {
-            statusCode: exceptionResponse.statusCode,
-            error: exceptionResponse.error,
-            message: Features.reduceMsg(exceptionResponse.message),
-            date: Features.getTimeZone(new Date()),
-            layer: 'controller',
-            transactionId: this.configApp.getTransactionId(),
-            urlApi: this.configApp.getUrlApi(),
-            urlBackend: this.configApp.getUrlBackend(), 
-            responseBackend: 'does not apply',
-          }
-        };
-
-        const loggerProps: LoggerException = {
-          configApp: this.configApp,
-          fault: objException,
-          isSuccess: false,
-          isConnectivity: false,
-          logger: this.logger,
-        };
-
-        Features.loggerException(loggerProps);
+      default:{  
     
         return response
           .status(exceptionResponse.statusCode)
-          .json(objException);
+          .json(response); 
       }
     }
   }

@@ -1,8 +1,16 @@
 import { IsDefined, IsNotEmpty } from "class-validator";
-import { PayloadUserDto } from "./User.dto";
 
+/**
+ * 
+ * @descirption
+ * data transfer object (DTO) in Domain Layer
+ * 
+ */
+export class ResponseDto<T> {
 
-export class ResponseDto {
+  @IsDefined()
+  @IsNotEmpty()
+  ok: boolean;
 
   @IsDefined()
   @IsNotEmpty()
@@ -10,13 +18,9 @@ export class ResponseDto {
 
   @IsDefined()
   @IsNotEmpty()
-  statusMessage: string;
+  statusText: string;
 
   @IsDefined()
   @IsNotEmpty()
-  descriptionMessage: string;
-
-  @IsDefined()
-  @IsNotEmpty()
-  response: PayloadUserDto[];
+  data: T[] | T | string | any;
 }

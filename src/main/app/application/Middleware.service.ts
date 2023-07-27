@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuid } from "uuid";
-import { ConfigApp } from "./ConfigApp.service";
+import { ConfigAppService } from "./ConfigApp.service";
 
 /**
  * 
@@ -14,7 +14,7 @@ import { ConfigApp } from "./ConfigApp.service";
 @Injectable()
 export class Middleware implements NestMiddleware {
 
-  constructor(private readonly configApp: ConfigApp){}
+  constructor(private readonly configApp: ConfigAppService){}
 
   //
   private transactionid: string;
@@ -28,17 +28,16 @@ export class Middleware implements NestMiddleware {
 
   setPayloadRequest(request: Request): void{
 
-    if(request.method === this.configApp.getMethodGET() && Object.entries(request.query).length > 0){
-      this.configApp.setPayloadRequest(request.query);
-    }
+    request.method === this.configApp.getMethodGET() && 
+    Object.entries(request.query).length > 0 &&
+    this.configApp.setPayloadRequest(request.query);
 
-    if(request.method === this.configApp.getMethodGET() && Object.entries(request.params).length > 0){
-      this.configApp.setPayloadRequest(request.params);
-    }
+    request.method === this.configApp.getMethodGET() &&
+    Object.entries(request.params).length > 0 &&
+    this.configApp.setPayloadRequest(request.params);
 
-    if(request.method === this.configApp.getMethodPOST()){
-      this.configApp.setPayloadRequest(request.body);
-    }
+    request.method === this.configApp.getMethodPOST() &&
+    this.configApp.setPayloadRequest(request.body);
   }
 
   use(request: Request, response: Response, next: NextFunction){

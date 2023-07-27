@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import ConfigAppDefault from "./ConfigApp.default";
 
 
 @Injectable()
-export class ConfigApp {
+export class ConfigAppService {
 
   //
   private payloadRequest: any;
@@ -18,21 +19,34 @@ export class ConfigApp {
   private applicationName: string;
   private methodName: string;
   private timeOutHttpConnection: number;
-  private breakerFailureThreshold: number;
-  private breakerSuccessThreshold: number;
-  private breakerTimeout: number;
+  private backendAppName: string;
   private urlBackend: string;
 
   //
   constructor(private configService: ConfigService) {
 
-    this.applicationName = this.configService.get<string>('NODE_ENV_APPLICATION_NAME');
-    this.methodName = this.configService.get<string>('NODE_ENV_METHOD_NAME');
-    this.timeOutHttpConnection = parseInt(this.configService.get<string>('NODE_ENV_TIMEOUT_HTTP_CONNECTION'));
-    this.breakerFailureThreshold = parseInt(this.configService.get<string>('NODE_ENV_CIRCUIT_BREAKER_REQUEST_FAILURE_THRESHOLD'));
-    this.breakerSuccessThreshold = parseInt(this.configService.get<string>('NODE_ENV_CIRCUIT_BREAKER_REQUEST_SUCCESS_THRESHOLD'));
-    this.breakerTimeout = parseInt(this.configService.get<string>('NODE_ENV_CIRCUIT_BREAKER_TIMEOUT'));
-    this.urlBackend = this.configService.get<string>('NODE_ENV_HTTP_URL_BACK_END');
+    let env: string | undefined;
+
+    env = this.configService.get<string>('ENV_APP_NAME');
+    if(typeof env === 'string') this.applicationName = env;
+    else this.applicationName = ConfigAppDefault.ENV_APP_NAME;
+
+    env = this.configService.get<string>('ENV_METHOD_NAME');
+    if(typeof env === 'string') this.methodName = env;
+    else this.methodName = ConfigAppDefault.ENV_METHOD_NAME;
+
+    env = this.configService.get<string>('ENV_TIMEOUT_HTTP');
+    if(typeof env === 'string') this.timeOutHttpConnection = parseInt(env);
+    else this.timeOutHttpConnection = parseInt(ConfigAppDefault.ENV_TIMEOUT_HTTP);
+    
+    env = this.configService.get<string>('ENV_BACKEND_APP_NAME');
+    if(typeof env === 'string') this.backendAppName = env;
+    else this.backendAppName = ConfigAppDefault.ENV_BACKEND_APP_NAME;
+
+    env = this.configService.get<string>('ENV_URL_BACKEND');
+    if(typeof env === 'string') this.urlBackend = env;
+    else this.urlBackend = ConfigAppDefault.ENV_URL_BACKEND;
+
   }
 
   /**
@@ -43,8 +57,9 @@ export class ConfigApp {
    */
 
   setPayloadRequest = (payloadRequest: any): void => this.payloadRequest = payloadRequest;
-  setPayloadResponse = (payloadResponse: any): void => this.payloadResponse = payloadResponse;
   getPayloadRequest = (): any => this.payloadRequest;
+
+  setPayloadResponse = (payloadResponse: any): void => this.payloadResponse = payloadResponse;
   getPayloadResponse = (): any => this.payloadResponse;
 
   setTransactionId = (transactionId: string) => this.transactionId = transactionId;
@@ -72,22 +87,8 @@ export class ConfigApp {
   getApplicationName = (): string => this.applicationName;
   getMethodName = (): string => this.methodName;
   getTimeOutHttpConnection = (): number => this.timeOutHttpConnection;
-  getBreakerFailureThreshold = (): number => this.breakerFailureThreshold;
-  getBreakerSuccessThreshold = (): number => this.breakerSuccessThreshold;
-  getBreakerTimeout = (): number => this.breakerTimeout;
+  getBackendAppName = (): string => this.backendAppName;
   getUrlBackend = (): string => this.urlBackend;
-
-  /**
-   * 
-   * @description
-   * Circuit Breaker configurations
-   * 
-   */
-
-  getBreakerGreenState = (): string => "green";
-  getBreakerRedState = (): string => "red";
-  getBreakerYellowState = (): string => "yellow";
-  getCircuitBreakerErrorDescription = (timeout: number): string => `volver a intentar despues de ${timeout / 1000} segundos`;
 
   /**
    * 
@@ -96,7 +97,7 @@ export class ConfigApp {
    * 
    */
 
-  getGeneticErrorMessage = (): string => "error";
-  getHttpErrorMessage = (): string => "error http";
-  getSystemErrorHandlerMessage = (): string => "openshift";
+  getLevelInfo = (): string => 'Info';
+  getLayerConnectivity = (): string => 'Connectivity';
+  getMessageSuccess = (): string => 'Success';
 }

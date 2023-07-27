@@ -1,6 +1,6 @@
-import { ConfigApp } from "../../application/ConfigApp.service";
+import { ConfigAppService } from "../../application/ConfigApp.service";
 
-export type Props = {
+export type PropsType = {
   url: string;
   timeout: number;
   properties: {
@@ -14,7 +14,7 @@ export type Props = {
   bodyDelelete?: any;
 };
 
-export type Fault = {
+export type FaultType = {
   fault: {
     statusCode: number;
     error: string;
@@ -24,17 +24,18 @@ export type Fault = {
     transactionId: string;
     urlApi: string;
     urlBackend: string;
+    backendResponse: string | any;
   }
 }
 
-export type ObjResponse<T> = {
+export type ResponseType<T> = {
   ok: boolean;
   statusCode: number;
   statusText: string;
-  bodyOut: T | Fault | string | any;
+  data: T[] | T | FaultType | string | any;
 }
 
-export type ObjLogger = {
+export type LoggerType = {
   applicationName: string;
   methodName: string;
   verb: string;
@@ -51,18 +52,12 @@ export type ObjLogger = {
   type?: string;
 }
 
-export type ConfigLogger = {
-  configApp: ConfigApp,
-  isSuccess: boolean,
-  isConnectivity: boolean,
-}
-
-export type LoggerSuccess = {
-  configApp: ConfigApp,
+export type LoggerSuccessType = {
+  configApp: ConfigAppService,
   bodyOut: any,
-  isSuccess: boolean,
-  isConnectivity: boolean,
   logger: any,
 }
 
-export type AsyncResp<T> = Promise<ObjResponse<T>>;
+export type AsyncResp<T> = Promise<ResponseType<T>>;
+
+export type FunctionFetch = <T1,T2>(props: PropsType) => AsyncResp<T1 | T2>;

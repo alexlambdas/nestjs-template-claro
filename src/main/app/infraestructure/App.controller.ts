@@ -1,39 +1,28 @@
-import { Body, Controller, Get, Post, Query, UseFilters, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ConfigApp } from "../application/ConfigApp.service";
-import { PayloadUserDto, QueryUserDto } from "../domain/dtos/User.dto";
+import { Controller, Get, HttpException, Query, UseFilters } from "@nestjs/common";
+import { ConfigAppService } from "../application/ConfigApp.service";
+import { QueryUserDto, UserDto } from "../domain/dtos/User.dto";
 import { ResponseDto } from "../domain/dtos/Response.dto";
 import { AppService } from "../application/App.service";
 import { HttpFilterException } from "./HttpFilter.exception";
 import Features from "../application/Features";
-import { ObjResponse } from "../domain/types/TypeAliases";
+import { ResponseType } from "../domain/types/TypeAliases";
+import { FaultDto } from "../domain/dtos/Fault.dto";
 
 
 @Controller('/api/path/nestjs/template/users')
 @UseFilters(HttpFilterException)
 export class AppController{ 
 
-  constructor(
-    private readonly configApp: ConfigApp, 
-    private readonly appService: AppService){} 
+  constructor(private readonly appService: AppService){} 
 
-  @Get()
-  async get(@Query() bodyIn: QueryUserDto): Promise<ResponseDto>{
+  @Get('/')
+  async get(@Query() bodyIn: QueryUserDto): Promise<ResponseDto<UserDto>>{
     try{
-      return await this.appService.getApp<QueryUserDto,ResponseDto>(bodyIn);
+      return await this.appService.getApp<QueryUserDto,UserDto>(bodyIn);
     }
-    catch(err: ObjResponse<QueryUserDto> | any){ 
-      Features.handlerException(err, this.configApp);
-    }
-  }
-
-  @Post()
-  @UsePipes(ValidationPipe)
-  async post(@Body() bodyIn: PayloadUserDto): Promise<ResponseDto>{
-    try{
-      return await this.appService.postApp<PayloadUserDto,ResponseDto>(bodyIn);
-    }
-    catch(err: ObjResponse<QueryUserDto> | any){
-      Features.handlerException(err, this.configApp);
+    catch(err: ResponseType<any> | any){
+      const httpException: HttpException = Features.handlerException<FaultDto>(err);
+      throw httpException;
     }
   }
 }

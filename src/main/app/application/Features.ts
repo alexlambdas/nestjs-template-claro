@@ -1,20 +1,19 @@
-import { BadRequestException, ForbiddenException, HttpStatus, InternalServerErrorException, NotFoundException, RequestTimeoutException, ServiceUnavailableException } from "@nestjs/common";
-import { AsyncResp, ConfigLogger, Fault, HttpExceptionFilter, LoggerException, ObjLogger, ObjResponse, Props } from "../domain/types/TypeAliases";
-import { ConfigApp } from "./ConfigApp.service";
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, RequestTimeoutException, ServiceUnavailableException } from "@nestjs/common";
+import { AsyncResponse, ConfigLoggerType, FaultType, HttpExceptionFilterType, ConfigLoggerExceptionType, LoggerType, ResponseType, PropsType } from "../domain/types/TypeAliases";
 import fetch from "cross-fetch";
 
 //
-async function httpCall<T>(props: Props): AsyncResp<T>{ 
+async function httpCall<T>(props: PropsType): AsyncResponse<T>{ 
   try{
 
     const {url,properties} = props;
     const response = await fetch(url,properties);
 
-    const fetchOut: ObjResponse<T> = {
+    const fetchOut: ResponseType<T> = {
       ok: response.ok,
       statusCode: response.status,
       statusText: response.statusText,
-      bodyOut: await response.json(),
+      data: await response.json(),
     };
 
     return fetchOut;
@@ -22,18 +21,17 @@ async function httpCall<T>(props: Props): AsyncResp<T>{
   }
   catch(err: any){
 
-    const fetchOut: ObjResponse<T> = {
+    const fetchOut: ResponseType<T> = {
       ok: false,
       statusCode: 500,
       statusText: 'Internal Server Error',
-      bodyOut: String(err),
+      data: String(err),
     };
-
     return fetchOut;
   }
 }
 
-function objToStringQuery<T>(obj: T): string{
+function objToStringQuery<T extends object>(obj: T): string{
   
   let result: string = '?';
   const objArray = Object.entries(obj);
@@ -66,45 +64,37 @@ function getTimeZone(date: Date): string{
   const gmt05Date = new Date(year, month, day, hours, minutes, seconds);
 
   //
-  return gmt05Date.toISOString().split(".")[0];
+  return gmt05Date.toISOString().split(".")[0]; 
 }
 
-function handlerException<T>(err: ObjResponse<T>, configApp: ConfigApp): void{
+function handlerException<T>(err: ResponseType<T>): HttpException{
 
-  configApp.setPayloadResponse(err);
-  
   switch(err.statusCode){
     
     case HttpStatus.REQUEST_TIMEOUT :{
-      throw new RequestTimeoutException();
+      return new RequestTimeoutException();
     }
 
     case HttpStatus.BAD_REQUEST :{
-      throw new BadRequestException();
+      return new BadRequestException();
     }
 
     case HttpStatus.NOT_FOUND :{
-      throw new NotFoundException();
+      return new NotFoundException();
     }
 
     case HttpStatus.FORBIDDEN:{
-      throw new ForbiddenException();
+      return new ForbiddenException();
     }
 
     case HttpStatus.SERVICE_UNAVAILABLE:{
-      throw new ServiceUnavailableException();
+      return new ServiceUnavailableException();
     }
 
     default:{
-      throw new InternalServerErrorException();
+      return new InternalServerErrorException();
     }
   }
-}
-
-//
-function reduceMessage(prev: string, current: string): string {
-  if(prev === '') return `${current}`;
-  else return `${prev} && ${current}`;
 }
 
 //
@@ -117,7 +107,7 @@ function getMsgExceptionFilterDefault(message: string | [string]): string{
 }
 
 //
-function defaultHttpException(exception: HttpExceptionFilter): Fault{
+function defaultHttpException(exception: HttpExceptionFilterType): FaultType{
   return{
     fault: {
       statusCode: exception.statusCode,
@@ -125,12 +115,12 @@ function defaultHttpException(exception: HttpExceptionFilter): Fault{
       message: getMsgExceptionFilterDefault(exception.message),
       date: getTimeZone(new Date()),
       layer: 'Controller',
-      responseBackend: 'does not apply',
+      backendResponse: 'does not apply',
     }
   }
 }
 
-function objLogger(configLogger: ConfigLogger): ObjLogger{
+function objLogger(configLogger: ConfigLoggerType): LoggerType{
 
   const timeInit: number = configLogger.configApp.getTimeInit()/1000;
   const timeEnd: number = configLogger.configApp.getTimeEnd();
@@ -152,6 +142,13 @@ function objLogger(configLogger: ConfigLogger): ObjLogger{
   }
 }
 
+//
+function reduceMessage(prev: string, current: string): string {
+  if(prev === '') return `${current}`;
+  else return `${prev} && ${current}`;
+}
+
+//
 function reduceMsg(message: string | [string]): string{
 
   if(Array.isArray(message)){
@@ -161,9 +158,9 @@ function reduceMsg(message: string | [string]): string{
   return message;
 }
 
-function loggerException(props: LoggerException): void{
+function loggerException(props: ConfigLoggerExceptionType): void{
 
-  const configLogger: ConfigLogger = {
+  const configLogger: ConfigLoggerType = {
     configApp: props.configApp,
     isConnectivity: props.isConnectivity,
     isSuccess: props.isSuccess,
@@ -172,9 +169,9 @@ function loggerException(props: LoggerException): void{
   props.configApp.setTimeEnd(Date.now());
   props.configApp.setPayloadResponse(props.fault);
 
-  const loggerVO: ObjLogger = objLogger(configLogger);
-  const childLogger: any = props.logger.child(loggerVO);
-  childLogger.info(loggerVO.message);
+  const loggerType: LoggerType = objLogger(configLogger);
+  const childLogger: any = props.logger.child(loggerType);
+  childLogger.info(loggerType.message);
 }
 
 
