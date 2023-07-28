@@ -29,21 +29,29 @@ class DetailFaultDto {
   @IsNotEmpty()
   layer: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  applicationName: string;
+
+  @ApiPropertyOptional()
   @IsNotEmpty()
   transactionId?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNotEmpty()
   urlApi?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNotEmpty()
   urlBackend?: string;
 
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  backendApplicationName?: string;
+
   @ApiProperty()
   @IsNotEmpty()
-  backendResponse: string | any;
+  backendResponse: string | object;
 }
 
 

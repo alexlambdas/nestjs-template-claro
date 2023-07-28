@@ -1,8 +1,8 @@
-import { HttpRepository, I_HTTP_REPOSITORY } from "src/main/share/Http/infraestructure/port/Http.repository";
-import { ResponseType, PropsType, AjvErrorType } from "../domain/types/TypeAliases";
+import { HttpRepository, I_HTTP_REPOSITORY } from "../../share/Http/infraestructure/port/Http.repository";
+import { ResponseType, PropsType, AjvErrorType } from "../domain/types/Common.type";
 import { ConfigAppService } from "./ConfigApp.service";
 import { Inject, Injectable } from "@nestjs/common";
-import Features from "./Features";
+import Util from "./Utilities.service";
 import { fnUserSchemaErrorValidation } from "../domain/schemas/User.schema";
 
 @Injectable()
@@ -14,7 +14,7 @@ export class AppService {
 
   async getApp<T1 extends object,T2>(bodyIn: T1): Promise<ResponseType<T2>>{
 
-    const url: string = this.configApp.getUrlBackend() + Features.objToStringQuery(bodyIn);
+    const url: string = this.configApp.getUrlBackend() + Util.buildStringQuery(bodyIn);
 
     const props: PropsType = {
       url: url,

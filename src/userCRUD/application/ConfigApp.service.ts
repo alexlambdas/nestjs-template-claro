@@ -1,6 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { Injectable } from "@nestjs/common";
-import { AjvErrorType } from "../domain/types/TypeAliases";
+import { AjvErrorType } from "../domain/types/Common.type";
 import ConfigAppDefault from "./ConfigApp.default";
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ConfigAppService {
   private methodName: string;
   private urlBackend: string;
   private timeOutHttpConnection: number;
-  private backendAppName: string;
+  private backendApplicationName: string;
 
 
   constructor(private readonly configService: ConfigService) {
@@ -42,8 +42,8 @@ export class ConfigAppService {
     else this.timeOutHttpConnection = parseInt(ConfigAppDefault.ENV_TIMEOUT_HTTP);
     
     env = this.configService.get<string>('ENV_BACKEND_APP_NAME');
-    if(typeof env === 'string') this.backendAppName = env;
-    else this.backendAppName = ConfigAppDefault.ENV_BACKEND_APP_NAME;
+    if(typeof env === 'string') this.backendApplicationName = env;
+    else this.backendApplicationName = ConfigAppDefault.ENV_BACKEND_APP_NAME;
 
     env = this.configService.get<string>('ENV_URL_BACKEND');
     if(typeof env === 'string') this.urlBackend = env;
@@ -93,7 +93,7 @@ export class ConfigAppService {
   getMethodName = (): string => this.methodName;
   getUrlBackend = (): string => this.urlBackend;
   getTimeOut = (): number => this.timeOutHttpConnection;
-  getBackendAppName = (): string => this.backendAppName;
+  getBackendApplicationName = (): string => this.backendApplicationName;
   
 
   /**
@@ -107,5 +107,6 @@ export class ConfigAppService {
   getMethodPOST = (): string => 'POST';
   getMethodPUT = (): string => 'PUT';
   getMethodDELETE = (): string => 'DELETE';
+  getLayerConnectivity = (): string => 'Connectivity';
 
 }

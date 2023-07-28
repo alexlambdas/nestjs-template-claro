@@ -21,9 +21,11 @@ export type FaultType = {
     message: string | undefined;
     date: string;
     layer: string;
+    applicationName?: string,
     transactionId?: string;
     urlApi?: string;
     urlBackend?: string;
+    backendApplicationName?: string;
     backendResponse: string | any;
   }
 };
