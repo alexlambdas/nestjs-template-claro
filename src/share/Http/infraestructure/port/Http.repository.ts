@@ -4,12 +4,12 @@ export const I_HTTP_REPOSITORY = 'I_HTTP_REPOSITORY';
 
 export interface HttpRepository {
 
-  GET: <T>(_: PropsType) => AsyncResp<T>;
+  GET: <T1>(_: PropsType) => AsyncResp<T1>;
 
-  POST: <T>(_: PropsType) => AsyncResp<T>;
+  POST: <T1>(_: PropsType) => AsyncResp<T1>;
 
-  PUT: <T>(_: PropsType) => AsyncResp<T>;
+  PUT: <T1>(_: PropsType) => AsyncResp<T1>;
 
-  DELETE: <T>(_: PropsType) => AsyncResp<T>;
+  DELETE: <T1>(_: PropsType) => AsyncResp<T1>;
 
 }

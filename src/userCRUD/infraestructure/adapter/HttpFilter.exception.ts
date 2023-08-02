@@ -57,7 +57,7 @@ export class HttpFilterException implements ExceptionFilter {
             logger: logger,
           };
   
-          Util.loggerException(loggerProps);  
+          //Util.loggerException(loggerProps);  
           
           return faultType;
   
@@ -89,7 +89,7 @@ export class HttpFilterException implements ExceptionFilter {
             logger: logger,
           };
   
-          Util.loggerException(loggerProps);        
+          //Util.loggerException(loggerProps);        
       
           return faultType;
         }
@@ -120,7 +120,7 @@ export class HttpFilterException implements ExceptionFilter {
             logger: logger,
           };
   
-          Util.loggerException(loggerProps);
+          //Util.loggerException(loggerProps);
       
           return faultType;  
         }

@@ -18,21 +18,23 @@ export type FaultType = {
   fault: {
     statusCode: number;
     error: string;
-    message: string;
+    message: string | undefined;
     date: string;
     layer: string;
+    applicationName: string,
     transactionId: string;
     urlApi: string;
     urlBackend: string;
+    backendApplicationName: string;
     backendResponse: string | any;
   }
-}
+};
 
 export type ResponseType<T> = {
   ok: boolean;
   statusCode: number;
   statusText: string;
-  data: T[] | T | FaultType | string | any;
+  data: T[] | T | string | any;
 }
 
 export type LoggerType = {
@@ -52,10 +54,16 @@ export type LoggerType = {
   type?: string;
 }
 
-export type LoggerSuccessType = {
-  configApp: ConfigAppService,
-  bodyOut: any,
+export type LoggerConfigPropertiesType<T> = {
+  configApp: ConfigAppService<T>,
+  responseType: ResponseType<T>,
   logger: any,
+}
+
+export type HttpExceptionFilterType = {
+  message: string | [string];
+  error: string;
+  statusCode: number;
 }
 
 export type AsyncResp<T> = Promise<ResponseType<T>>;

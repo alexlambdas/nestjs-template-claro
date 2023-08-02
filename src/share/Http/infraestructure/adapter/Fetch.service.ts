@@ -1,15 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { AsyncResp, FunctionFetch, PropsType, ResponseType } from "../../domain/types/Common.type";
 import fetch from "cross-fetch";
+import { ConfigAppService } from "../../application/ConfigApp.service";
 
 @Injectable()
-export class FetchService{
+export class FetchService<T1,T2>{
 
   private fetchCall: FunctionFetch;
 
-  constructor(){
+  constructor(private readonly configApp: ConfigAppService<T1>){
 
-    this.fetchCall = async <T1,T2>(props: PropsType): AsyncResp<T1 | T2> => {
+    this.fetchCall = async (props: PropsType): AsyncResp<T1 | T2> => {
       try {
 
         const { url, properties } = props;
@@ -21,7 +22,8 @@ export class FetchService{
           statusText: response.statusText,
           data: await response.json(),
         };
-    
+        
+        this.configApp.setPayloadResponse(fetchOut);
         return fetchOut;
     
       }
@@ -33,7 +35,8 @@ export class FetchService{
           statusText: 'Internal Server Error',
           data: String(err),
         };
-    
+        
+        this.configApp.setPayloadResponse(fetchOut);
         return fetchOut;
       }
     }

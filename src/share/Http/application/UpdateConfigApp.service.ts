@@ -4,9 +4,9 @@ import { Request } from 'express';
 import { ConfigAppService } from "./ConfigApp.service";
 
 @Injectable()
-export class UpdateConfigAppService implements NestInterceptor{
+export class UpdateConfigAppService<T> implements NestInterceptor{
 
-  constructor(private configApp: ConfigAppService) {}
+  constructor(private configApp: ConfigAppService<T>) {}
 
   setHttpConfigApp(request: Request): void {
     this.configApp.setTransactionId(String(request.headers['transactionid']));

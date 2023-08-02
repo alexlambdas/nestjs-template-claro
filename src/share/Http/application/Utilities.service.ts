@@ -1,4 +1,4 @@
-import { LoggerType, LoggerSuccessType } from "../domain/types/Common.type";
+import { LoggerType, LoggerConfigPropertiesType } from "../domain/types/Common.type";
 import { ConfigAppService } from "./ConfigApp.service";
 
 //
@@ -17,7 +17,7 @@ function getTimeZone(date: Date): string{
   return gmt05Date.toISOString().split(".")[0];
 }
 
-function buildLoggerType(configApp: ConfigAppService): LoggerType{
+function buildLoggerType<T>(configApp: ConfigAppService<T>): LoggerType{
 
   const timeInit: number = configApp.getTimeInit();
   const timeEnd: number = configApp.getTimeEnd();
@@ -39,17 +39,33 @@ function buildLoggerType(configApp: ConfigAppService): LoggerType{
   }
 }
 
-function loggerSuccess(props: LoggerSuccessType): void{ 
+function writeLog<T>(props: LoggerConfigPropertiesType<T>): void{ 
 
   props.configApp.setTimeEnd(Date.now());
-  props.configApp.setPayloadResponse(props.bodyOut);
 
-  const loggerVO: LoggerType = buildLoggerType(props.configApp);
-  const childLogger: any = props.logger.child(loggerVO);
-  childLogger.info(loggerVO.message);
+  const loggerType: LoggerType = buildLoggerType(props.configApp);
+  const childLogger: any = props.logger.child(loggerType);
+  childLogger.info(loggerType.message);
+}
+
+//
+function concatenateAString(prev: string, current: string): string {
+  if(prev === '') return `${current}`;
+  else return `${prev} && ${current}`;
+}
+
+//
+function reduceMessage(message: string | [string]): string{
+
+  if(Array.isArray(message)){
+    return message.reduce((prev, current) => concatenateAString(prev,current), '');
+  }
+
+  return message;
 }
 
 export default {
   getTimeZone,
-  loggerSuccess,
+  writeLog,
+  reduceMessage,
 }

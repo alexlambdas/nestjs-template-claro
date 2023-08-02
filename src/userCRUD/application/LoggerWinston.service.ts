@@ -3,7 +3,7 @@ import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Observable, tap } from "rxjs";
 import { ConfigAppService } from "./ConfigApp.service";
 import { LoggerSuccessType } from "../domain/types/Common.type";
-import Util from "./Utilities.service.";
+import Util from "./Utilities.service";
 
 
 @Injectable()

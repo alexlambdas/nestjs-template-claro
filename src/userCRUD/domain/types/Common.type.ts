@@ -54,6 +54,18 @@ export type LoggerType = {
   type?: string;
 }; 
 
+export type LoggerSuccessType = {
+  configApp: ConfigAppService,
+  bodyOut: any,
+  logger: any,
+}
+
+export type HttpExceptionFilterType = {
+  message: string | [string];
+  error: string;
+  statusCode: number;
+};
+
 export type ConfigLoggerType = {
   configApp: ConfigAppService,
   isSuccess: boolean,
@@ -67,12 +79,6 @@ export type ConfigLoggerExceptionType = {
   isConnectivity: boolean,
   logger: any,
 }
-
-export type HttpExceptionFilterType = {
-  message: string | [string];
-  error: string;
-  statusCode: number;
-};
 
 export type AsyncResponse<T> = Promise<ResponseType<T>>;
 

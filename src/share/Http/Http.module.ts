@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 import { HttpService } from "./infraestructure/adapter/Http.service";
 import { ConfigAppService } from "./application/ConfigApp.service";
-import { LoggerWinstonService } from "./application/LoggerWinston.service";
 import { I_HTTP_REPOSITORY } from "./infraestructure/port/Http.repository";
 import { WinstonModule } from "nest-winston";
 import * as winston from 'winston';
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { UpdateConfigAppService } from "./application/UpdateConfigApp.service";
 import { FetchService } from "./infraestructure/adapter/Fetch.service";
+import { ExceptionHandlerService } from "./application/ExceptionHandler.service";
 
 
 @Module({
@@ -29,7 +29,7 @@ import { FetchService } from "./infraestructure/adapter/Fetch.service";
       provide: APP_INTERCEPTOR,
     },
     {
-      useClass: LoggerWinstonService,
+      useClass: ExceptionHandlerService,
       provide: APP_INTERCEPTOR,
     }
   ],

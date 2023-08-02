@@ -5,6 +5,7 @@ import { Middleware } from "./application/Middleware.service";
 import { AppService } from "./application/App.service";
 import { ConfigAppService } from "./application/ConfigApp.service";
 
+
 @Module({
   imports: [ HttpModule ],
   providers: [ AppService, ConfigAppService ],

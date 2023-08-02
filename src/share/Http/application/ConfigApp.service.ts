@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import ConfigAppDefault from "./ConfigApp.default";
+import { ResponseType } from "../domain/types/Common.type";
 
 
 @Injectable()
-export class ConfigAppService {
+export class ConfigAppService<T> {
 
   //
-  private payloadRequest: any;
-  private payloadResponse: any;
+  private payloadRequest: T;
+  private payloadResponse: ResponseType<T>;
   private transactionId: string;
   private verb: string;
   private urlApi: string;
@@ -19,7 +20,7 @@ export class ConfigAppService {
   private applicationName: string;
   private methodName: string;
   private timeOutHttpConnection: number;
-  private backendAppName: string;
+  private backendApplicationName: string;
   private urlBackend: string;
 
   //
@@ -40,8 +41,8 @@ export class ConfigAppService {
     else this.timeOutHttpConnection = parseInt(ConfigAppDefault.ENV_TIMEOUT_HTTP);
     
     env = this.configService.get<string>('ENV_BACKEND_APP_NAME');
-    if(typeof env === 'string') this.backendAppName = env;
-    else this.backendAppName = ConfigAppDefault.ENV_BACKEND_APP_NAME;
+    if(typeof env === 'string') this.backendApplicationName = env;
+    else this.backendApplicationName = ConfigAppDefault.ENV_BACKEND_APP_NAME;
 
     env = this.configService.get<string>('ENV_URL_BACKEND');
     if(typeof env === 'string') this.urlBackend = env;
@@ -56,11 +57,11 @@ export class ConfigAppService {
    * 
    */
 
-  setPayloadRequest = (payloadRequest: any): void => this.payloadRequest = payloadRequest;
+  setPayloadRequest = (payloadRequest: T): void => {this.payloadRequest = payloadRequest};
   getPayloadRequest = (): any => this.payloadRequest;
 
-  setPayloadResponse = (payloadResponse: any): void => this.payloadResponse = payloadResponse;
-  getPayloadResponse = (): any => this.payloadResponse;
+  setPayloadResponse = (payloadResponse: ResponseType<T>): void => {this.payloadResponse = payloadResponse;}
+  getPayloadResponse = (): ResponseType<T> => this.payloadResponse;
 
   setTransactionId = (transactionId: string) => this.transactionId = transactionId;
   getTransactionId = (): string => this.transactionId;
@@ -86,9 +87,9 @@ export class ConfigAppService {
 
   getApplicationName = (): string => this.applicationName;
   getMethodName = (): string => this.methodName;
-  getTimeOutHttpConnection = (): number => this.timeOutHttpConnection;
-  getBackendAppName = (): string => this.backendAppName;
   getUrlBackend = (): string => this.urlBackend;
+  getTimeOut = (): number => this.timeOutHttpConnection;
+  getBackendApplicationName = (): string => this.backendApplicationName;
 
   /**
    * 

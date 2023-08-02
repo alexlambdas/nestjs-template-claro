@@ -1,5 +1,16 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, RequestTimeoutException, ServiceUnavailableException } from "@nestjs/common";
-import { AsyncResponse, ConfigLoggerType, FaultType, HttpExceptionFilterType, ConfigLoggerExceptionType, LoggerType, ResponseType, PropsType } from "../domain/types/Common.type";
+import { 
+  BadRequestException, 
+  ForbiddenException, 
+  HttpException, 
+  HttpStatus, 
+  InternalServerErrorException, 
+  NotFoundException, 
+  RequestTimeoutException, 
+  ServiceUnavailableException 
+} from "@nestjs/common";
+
+import { LoggerType, ResponseType, LoggerSuccessType, ConfigLoggerExceptionType, ConfigLoggerType } from "../domain/types/Common.type";
+import { ConfigAppService } from "./ConfigApp.service";
 
 function buildStringQuery<T extends object>(obj: T): string{
   
@@ -81,26 +92,36 @@ function reduceMessage(message: string | [string]): string{
   return message;
 }
 
-function buildLoggerType(configLogger: ConfigLoggerType): LoggerType{
+function buildLoggerType(configApp: ConfigAppService): LoggerType{
 
-  const timeInit: number = configLogger.configApp.getTimeInit();
-  const timeEnd: number = configLogger.configApp.getTimeEnd();
+  const timeInit: number = configApp.getTimeInit();
+  const timeEnd: number = configApp.getTimeEnd();
 
   return{
-    applicationName: configLogger.configApp.getApplicationName(),
-    methodName: configLogger.configApp.getMethodName(),
-    verb: configLogger.configApp.getVerb(),
-    transactionId: configLogger.configApp.getTransactionId(),
-    level: 'info',
-    layer: configLogger.isConnectivity ? 'connectivity' : 'controller',
-    message: configLogger.isSuccess ? 'exitoso' : 'error',
-    processingTime: timeEnd-timeInit,
+    applicationName: configApp.getApplicationName(),
+    methodName: configApp.getMethodName(),
+    verb: configApp.getVerb(),
+    transactionId: configApp.getTransactionId(),
+    level: configApp.getLevelInfo(),
+    layer: configApp.getLayerController(),
+    message: configApp.getMessageSuccess(),
+    processingTime: (timeEnd-timeInit)/1000,
     timestamp: getTimeZone(new Date()),
-    urlApi: configLogger.configApp.getUrlApi(),
-    urlBackend: configLogger.configApp.getUrlBackend(),
-    request: configLogger.configApp.getPayloadRequest(),
-    response: configLogger.configApp.getPayloadResponse(),
+    urlApi: configApp.getUrlApi(),
+    urlBackend: configApp.getUrlBackend(),
+    request: configApp.getPayloadRequest(),
+    response: configApp.getPayloadResponse(),
   }
+}
+
+function loggerSuccess(props: LoggerSuccessType): void{ 
+
+  props.configApp.setTimeEnd(Date.now());
+  props.configApp.setPayloadResponse(props.bodyOut);
+
+  const loggerVO: LoggerType = buildLoggerType(props.configApp);
+  const childLogger: any = props.logger.child(loggerVO);
+  childLogger.info(loggerVO.message);
 }
 
 function loggerException(props: ConfigLoggerExceptionType): void{
@@ -114,7 +135,7 @@ function loggerException(props: ConfigLoggerExceptionType): void{
   props.configApp.setTimeEnd(Date.now());
   props.configApp.setPayloadResponse(props.fault);
 
-  const loggerType: LoggerType = buildLoggerType(configLogger);
+  const loggerType: LoggerType = buildLoggerType(configLogger.configApp);
   const childLogger: any = props.logger.child(loggerType);
   childLogger.info(loggerType.message);
 }
@@ -126,5 +147,6 @@ export default {
   handlerException,
   buildLoggerType,
   reduceMessage,
+  loggerSuccess,
   loggerException,
 }

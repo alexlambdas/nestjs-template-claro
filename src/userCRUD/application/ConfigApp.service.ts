@@ -108,5 +108,8 @@ export class ConfigAppService {
   getMethodPUT = (): string => 'PUT';
   getMethodDELETE = (): string => 'DELETE';
   getLayerConnectivity = (): string => 'Connectivity';
+  getLayerController = (): string => 'Controller';
+  getLevelInfo = (): string => 'Info';
+  getMessageSuccess = (): string => 'sucess';
 
 }
