@@ -5,11 +5,11 @@ import { ResponseType } from "../domain/types/Common.type";
 
 
 @Injectable()
-export class ConfigAppService<T> {
+export class ConfigAppService {
 
   //
-  private payloadRequest: T;
-  private payloadResponse: ResponseType<T>;
+  private payloadRequest: any;
+  private payloadResponse: ResponseType<any>;
   private transactionId: string;
   private verb: string;
   private urlApi: string;
@@ -57,11 +57,11 @@ export class ConfigAppService<T> {
    * 
    */
 
-  setPayloadRequest = (payloadRequest: T): void => {this.payloadRequest = payloadRequest};
+  setPayloadRequest = (payloadRequest: any): void => {this.payloadRequest = payloadRequest};
   getPayloadRequest = (): any => this.payloadRequest;
 
-  setPayloadResponse = (payloadResponse: ResponseType<T>): void => {this.payloadResponse = payloadResponse;}
-  getPayloadResponse = (): ResponseType<T> => this.payloadResponse;
+  setPayloadResponse = (payloadResponse: ResponseType<any>): void => {this.payloadResponse = payloadResponse;}
+  getPayloadResponse = (): ResponseType<any> => this.payloadResponse;
 
   setTransactionId = (transactionId: string) => this.transactionId = transactionId;
   getTransactionId = (): string => this.transactionId;

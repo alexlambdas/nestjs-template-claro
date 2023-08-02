@@ -17,7 +17,7 @@ function getTimeZone(date: Date): string{
   return gmt05Date.toISOString().split(".")[0];
 }
 
-function buildLoggerType<T>(configApp: ConfigAppService<T>): LoggerType{
+function buildLoggerType(configApp: ConfigAppService): LoggerType{
 
   const timeInit: number = configApp.getTimeInit();
   const timeEnd: number = configApp.getTimeEnd();

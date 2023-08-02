@@ -4,13 +4,13 @@ import fetch from "cross-fetch";
 import { ConfigAppService } from "../../application/ConfigApp.service";
 
 @Injectable()
-export class FetchService<T1,T2>{
+export class FetchService{
 
   private fetchCall: FunctionFetch;
 
-  constructor(private readonly configApp: ConfigAppService<T1>){
+  constructor(private readonly configApp: ConfigAppService){
 
-    this.fetchCall = async (props: PropsType): AsyncResp<T1 | T2> => {
+    this.fetchCall = async <T1,T2>(props: PropsType): AsyncResp<T1 | T2> => {
       try {
 
         const { url, properties } = props;

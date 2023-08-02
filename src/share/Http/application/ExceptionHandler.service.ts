@@ -5,16 +5,16 @@ import { ConfigAppService } from "./ConfigApp.service";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import Util from "./Utilities.service";
 
-export class ExceptionHandlerService<T> implements NestInterceptor {
+export class ExceptionHandlerService implements NestInterceptor {
 
   constructor(
-    private readonly configApp: ConfigAppService<T>,
+    private readonly configApp: ConfigAppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger) { }
 
 
-  buildLoggerConfigProperties(
+  buildLoggerConfigProperties<T>(
     responseType: ResponseType<T>,
-    configApp: ConfigAppService<T>,
+    configApp: ConfigAppService,
     logger: any,
   ): LoggerConfigPropertiesType<T> { 
 
@@ -27,7 +27,7 @@ export class ExceptionHandlerService<T> implements NestInterceptor {
     return loggerProps;
   }
 
-  buildHttpError(err: ResponseType<T>): HttpException {
+  buildHttpError<T>(err: ResponseType<T>): HttpException {
 
     switch (err.statusCode) {
 
@@ -72,7 +72,7 @@ export class ExceptionHandlerService<T> implements NestInterceptor {
           Util.writeLog(loggerProps);
 
         }),
-        catchError((responseType: ResponseType<T>) => {
+        catchError((responseType: ResponseType<any>) => {
           
           const loggerProps = this.buildLoggerConfigProperties(responseType, this.configApp, this.logger);
           Util.writeLog(loggerProps);

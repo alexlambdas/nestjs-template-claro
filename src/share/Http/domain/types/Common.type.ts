@@ -34,7 +34,7 @@ export type ResponseType<T> = {
   ok: boolean;
   statusCode: number;
   statusText: string;
-  data: T[] | T | string | any;
+  data: T[] | T | FaultType | string | any;
 }
 
 export type LoggerType = {
@@ -55,7 +55,7 @@ export type LoggerType = {
 }
 
 export type LoggerConfigPropertiesType<T> = {
-  configApp: ConfigAppService<T>,
+  configApp: ConfigAppService,
   responseType: ResponseType<T>,
   logger: any,
 }

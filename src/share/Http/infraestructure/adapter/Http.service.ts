@@ -10,19 +10,19 @@ import Util from "./Utilities.service";
 
 
 @Injectable()
-export class HttpService<T> implements HttpRepository{ 
+export class HttpService implements HttpRepository{ 
 
   //
   constructor(
-    private readonly configApp: ConfigAppService<T>,
-    private readonly http: FetchService<T,string>){}
+    private readonly configApp: ConfigAppService,
+    private readonly http: FetchService){}
   
   //
   @UseInterceptors(UpdateConfigAppService) 
   @UseInterceptors(ExceptionHandlerService)
-  async GET<T1>(props: PropsType): AsyncResp<T1>{
+  async read<T1>(props: PropsType): AsyncResp<T1>{
     
-    const bodyIn: T = props.bodyGet;
+    const bodyIn: T1 = props.bodyGet;
     this.configApp.setPayloadRequest(bodyIn);
 
     const fetchCall = this.http.getFunctionFetchCall();
@@ -32,7 +32,7 @@ export class HttpService<T> implements HttpRepository{
   }
 
   @UseInterceptors(UpdateConfigAppService)
-  async POST<T1>(props: PropsType): AsyncResp<T1>{
+  async create<T1>(props: PropsType): AsyncResp<T1>{
 
     this.configApp.setPayloadRequest(props.properties.body);
     const fetchCall = this.http.getFunctionFetchCall();
@@ -42,7 +42,7 @@ export class HttpService<T> implements HttpRepository{
   }
 
   @UseInterceptors(UpdateConfigAppService)
-  async PUT<T1>(props: PropsType): AsyncResp<T1>{
+  async update<T1>(props: PropsType): AsyncResp<T1>{
 
     this.configApp.setPayloadRequest(props.properties.body);
     const fetchCall = this.http.getFunctionFetchCall();
@@ -52,7 +52,7 @@ export class HttpService<T> implements HttpRepository{
   }
 
   @UseInterceptors(UpdateConfigAppService)
-  async DELETE<T1>(props: PropsType): AsyncResp<T1>{
+  async delete<T1>(props: PropsType): AsyncResp<T1>{
 
     this.configApp.setPayloadRequest(props.bodyDelelete);
     const fetchCall = this.http.getFunctionFetchCall();

@@ -29,7 +29,7 @@ export class AppService {
       bodyGet: bodyIn,
     };
  
-    const response: ResponseType<T2> = await this.http.GET<T1>(props);
+    const response: ResponseType<T2> = await this.http.read<T1>(props);
     const isAValidationResponseOk: boolean = fnUserSchemaErrorValidation(response.data[0]);
     const isAControlledFault: boolean = typeof response.data.fault === 'object';
     this.configApp.setPayloadResponse(response);

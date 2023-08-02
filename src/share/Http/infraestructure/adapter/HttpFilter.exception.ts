@@ -17,13 +17,13 @@ import Util from "../../application/Utilities.service";
 @Catch(HttpException)
 export class HttpFilterException<T> implements ExceptionFilter {
 
-  constructor(private readonly configApp: ConfigAppService<T>){ }
+  constructor(private readonly configApp: ConfigAppService){ }
 
 
   buildFaultType(
     responseType: ResponseType<T>, 
     exceptionResponse: HttpExceptionFilterType,
-    configApp: ConfigAppService<T>
+    configApp: ConfigAppService
     ): FaultType{
 
       const faultType: FaultType = {
